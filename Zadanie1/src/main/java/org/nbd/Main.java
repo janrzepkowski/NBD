@@ -40,18 +40,6 @@ public class Main {
         System.out.println(moped.getVehicleInfo());
         System.out.println();
 
-        // Test Rent class
-        Client client = new Client("4321446435", "John", "Doe", "1234567890");
-        String str1 = "2024-04-08 12:30";
-        String str2 = "2024-04-15 14:30";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime dateTime = LocalDateTime.parse(str1, formatter);
-        LocalDateTime dateTime2 = LocalDateTime.parse(str2, formatter);
-        Rent rent = new Rent(client, car, dateTime, dateTime2);
-        System.out.println("Rent Info:");
-        System.out.println(rent.getRentInfo());
-        System.out.println();
-
 
 
         List<Client> clientList = new ArrayList<>();

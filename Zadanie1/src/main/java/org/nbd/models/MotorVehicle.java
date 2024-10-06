@@ -14,7 +14,7 @@ public class MotorVehicle extends Vehicle {
 
     @Override
     public double getActualRentalPrice() {
-        int rentalPrice = getBasePrice();
+        double rentalPrice = getBasePrice();
         if (engineCapacity > 2) {
             rentalPrice *= 1.5;
         } else if (engineCapacity > 1) {

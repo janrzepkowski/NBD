@@ -9,15 +9,12 @@ public class Rent {
     private Vehicle vehicle;
     private LocalDateTime rentStart;
     private LocalDateTime rentEnd;
-    private boolean archived;
 
-    public Rent(Client client, Vehicle vehicle, LocalDateTime rentStart, LocalDateTime rentEnd) {
+    public Rent(Client client, Vehicle vehicle, LocalDateTime rentStart) {
         this.rentId = UUID.randomUUID().toString();
         this.client = client;
         this.vehicle = vehicle;
         this.rentStart = rentStart;
-        this.rentEnd = rentEnd;
-        this.archived = false;
     }
 
     public String getRentId() {
@@ -48,15 +45,11 @@ public class Rent {
         return vehicle.getActualRentalPrice() * getRentDays();
     }
 
-    public boolean isArchived() {
-        return archived;
-    }
-
-    public void setArchived(boolean archived) {
-        this.archived = archived;
+    public void setRentEnd(LocalDateTime rentEnd) {
+        this.rentEnd = rentEnd;
     }
 
     public String getRentInfo() {
-        return "Rent ID: " + rentId + "\nClient: " + client.getFirstName() + " " + client.getLastName() + "\nVehicle: " + vehicle.getBrand() + "\nRent start: " + rentStart + "\nRent end: " + rentEnd + "\nRent days: " + getRentDays() + "\nRent price: " + getRentPrice() + "\nArchived: " + archived;
+        return "Rent ID: " + rentId + "\nClient: " + client.getFirstName() + " " + client.getLastName() + "\nVehicle: " + vehicle.getBrand() + "\nRent start: " + rentStart + "\nRent end: " + rentEnd + "\nRent days: " + getRentDays() + "\nRent price: " + getRentPrice();
     }
 }
