@@ -1,24 +1,22 @@
 package org.nbd.models;
 
-import java.util.UUID;
-
 public class Client {
-    private final String clientId;
+    private final String personalId;
     private String firstName;
     private String lastName;
     private String phoneNumber;
     private boolean archived;
 
-    public Client(String firstName, String lastName, String phoneNumber) {
-        this.clientId = UUID.randomUUID().toString();
+    public Client(String personalId, String firstName, String lastName, String phoneNumber) {
+        this.personalId = personalId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.archived = false;
     }
 
-    public String getClientId() {
-        return clientId;
+    public String getPersonalId() {
+        return personalId;
     }
 
     public String getFirstName() {
@@ -54,6 +52,6 @@ public class Client {
     }
 
     public String getClientInfo() {
-        return "ID: " + clientId + "\nFirst name: " + firstName + "\nLast name: " + lastName + "\nPhone number: " + phoneNumber + "\nArchived: " + archived;
+        return "ID: " + personalId + "\nFirst name: " + firstName + "\nLast name: " + lastName + "\nPhone number: " + phoneNumber + "\nArchived: " + archived;
     }
 }
