@@ -1,4 +1,4 @@
-package org.nbd.models;
+package models;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,12 +9,14 @@ public class Rent {
     private Vehicle vehicle;
     private LocalDateTime rentStart;
     private LocalDateTime rentEnd;
+    private boolean archived;
 
     public Rent(Client client, Vehicle vehicle, LocalDateTime rentStart) {
         this.rentId = UUID.randomUUID().toString();
         this.client = client;
         this.vehicle = vehicle;
         this.rentStart = rentStart;
+        this.archived = false;
     }
 
     public String getRentId() {
@@ -47,6 +49,14 @@ public class Rent {
 
     public void setRentEnd(LocalDateTime rentEnd) {
         this.rentEnd = rentEnd;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     public String getRentInfo() {

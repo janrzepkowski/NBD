@@ -1,10 +1,6 @@
-package org.nbd;
+import managers.ClientManager;
+import models.*;
 
-import org.nbd.managers.ClientManager;
-import org.nbd.models.*;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +53,5 @@ public class Main {
         System.out.println("All Clients Info After Unregistering Jane Smith:");
         System.out.println(clientManager.getClientsInfo());
 
-        System.out.println("Active Clients Info:");
-        System.out.println(clientManager.getActiveClientsInfo());
     }
 }

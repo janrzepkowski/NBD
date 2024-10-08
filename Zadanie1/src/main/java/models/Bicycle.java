@@ -1,4 +1,4 @@
-package org.nbd.models;
+package models;
 
 public class Bicycle extends Vehicle {
     public Bicycle(String plateNumber, String brand, int basePrice) {

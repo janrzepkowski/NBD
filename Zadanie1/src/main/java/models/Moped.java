@@ -1,4 +1,4 @@
-package org.nbd.models;
+package models;
 
 public class Moped extends MotorVehicle {
     public Moped(String plateNumber, String brand, int basePrice, double engineCapacity) {

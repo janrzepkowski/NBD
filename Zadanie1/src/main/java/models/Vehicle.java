@@ -1,4 +1,4 @@
-package org.nbd.models;
+package models;
 
 public class Vehicle {
     protected String plateNumber;

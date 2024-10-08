@@ -1,4 +1,4 @@
-package org.nbd.models;
+package models;
 
 public class Car extends MotorVehicle {
     private char segment; // A, B, C, D, E, F

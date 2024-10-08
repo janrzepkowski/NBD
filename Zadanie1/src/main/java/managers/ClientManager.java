@@ -1,10 +1,9 @@
-package org.nbd.managers;
+package managers;
 
-import org.nbd.models.Client;
+import models.Client;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ClientManager {
     private List<Client> clients;
@@ -29,29 +28,15 @@ public class ClientManager {
     }
 
     public void unregisterClient(String personalId) {
-        clients.stream()
-                .filter(client -> client.getPersonalId().equals(personalId))
-                .findFirst()
-                .ifPresent(client -> client.setArchived(true));
+        if (!clients.removeIf(client -> client.getPersonalId().equals(personalId))) {
+            throw new IllegalArgumentException("Client with personalId " + personalId + " does not exist.");
+        }
+        clients.removeIf(client -> client.getPersonalId().equals(personalId));
     }
 
     public String getClientsInfo() {
         StringBuilder clientsInfo = new StringBuilder();
         clients.forEach(client -> clientsInfo.append(client.getClientInfo()).append("\n\n"));
-        return clientsInfo.toString();
-    }
-
-    // pobieranie tylko aktywnych klientów
-    public List<Client> getActiveClients() {
-        return clients.stream()
-                .filter(client -> !client.isArchived())
-                .collect(Collectors.toList());
-    }
-
-    // pobieranie informacji tylko o aktywnych klientach
-    public String getActiveClientsInfo() {
-        StringBuilder clientsInfo = new StringBuilder();
-        getActiveClients().forEach(client -> clientsInfo.append(client.getClientInfo()).append("\n\n"));
         return clientsInfo.toString();
     }
 }

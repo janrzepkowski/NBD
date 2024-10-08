@@ -1,12 +1,13 @@
-package org.nbd.managers;
+package managers;
 
-import org.nbd.models.Client;
-import org.nbd.models.Rent;
-import org.nbd.models.Vehicle;
+import models.Client;
+import models.Rent;
+import models.Vehicle;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class RentManager {
     private List<Rent> rents;
@@ -17,6 +18,12 @@ public class RentManager {
 
     public List<Rent> getRents() {
         return rents;
+    }
+
+    public List<Rent> getActiveRents() {
+        return rents.stream()
+                .filter(rent -> !rent.isArchived())
+                .collect(Collectors.toList());
     }
 
     public Optional<Rent> getRent(String rentId) {
@@ -38,6 +45,7 @@ public class RentManager {
                 .findFirst()
                 .ifPresent(rent -> {
                     rent.setRentEnd(LocalDateTime.now());
+                    rent.setArchived(true);
                     vehicle.setAvailable(true);
                 });
     }
@@ -45,6 +53,12 @@ public class RentManager {
     public String getRentsInfo() {
         StringBuilder rentsInfo = new StringBuilder();
         rents.forEach(rent -> rentsInfo.append(rent.getRentInfo()).append("\n\n"));
+        return rentsInfo.toString();
+    }
+
+    public String getActiveRentsInfo() {
+        StringBuilder rentsInfo = new StringBuilder();
+        getActiveRents().forEach(rent -> rentsInfo.append(rent.getRentInfo()).append("\n\n"));
         return rentsInfo.toString();
     }
 }

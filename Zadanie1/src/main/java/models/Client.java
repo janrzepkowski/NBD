@@ -1,18 +1,16 @@
-package org.nbd.models;
+package models;
 
 public class Client {
     private final String personalId;
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private boolean archived;
 
     public Client(String personalId, String firstName, String lastName, String phoneNumber) {
         this.personalId = personalId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
-        this.archived = false;
     }
 
     public String getPersonalId() {
@@ -31,10 +29,6 @@ public class Client {
         return phoneNumber;
     }
 
-    public boolean isArchived() {
-        return archived;
-    }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -47,11 +41,7 @@ public class Client {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setArchived(boolean archived) {
-        this.archived = archived;
-    }
-
     public String getClientInfo() {
-        return "ID: " + personalId + "\nFirst name: " + firstName + "\nLast name: " + lastName + "\nPhone number: " + phoneNumber + "\nArchived: " + archived;
+        return "ID: " + personalId + "\nFirst name: " + firstName + "\nLast name: " + lastName + "\nPhone number: " + phoneNumber + "\n";
     }
 }

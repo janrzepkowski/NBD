@@ -1,4 +1,4 @@
-package org.nbd.models;
+package models;
 
 public class MotorVehicle extends Vehicle {
     private double engineCapacity;

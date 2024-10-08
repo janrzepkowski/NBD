@@ -1,9 +1,9 @@
-package org.nbd.managers;
+package managers;
 
-import org.nbd.models.Bicycle;
-import org.nbd.models.Car;
-import org.nbd.models.Moped;
-import org.nbd.models.Vehicle;
+import models.Bicycle;
+import models.Car;
+import models.Moped;
+import models.Vehicle;
 
 import java.util.List;
 import java.util.Optional;
