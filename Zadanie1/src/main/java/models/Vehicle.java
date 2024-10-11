@@ -1,9 +1,17 @@
 package models;
 
+import java.util.UUID;
+
 public class Vehicle {
+
+    protected UUID vehicleId;
+
     protected String plateNumber;
+
     protected String brand;
+
     protected final int basePrice;
+
     protected boolean isAvailable;
 
     public Vehicle(String plateNumber, String brand, int basePrice) {
@@ -11,6 +19,10 @@ public class Vehicle {
         this.brand = brand;
         this.basePrice = basePrice;
         this.isAvailable = true;
+    }
+
+    public UUID getVehicleId() {
+        return vehicleId;
     }
 
     public String getPlateNumber() {
