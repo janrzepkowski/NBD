@@ -24,6 +24,9 @@ public class Rent {
     @Column(name = "archived")
     private boolean archived;
 
+    public Rent() {
+    }
+
     public Rent(Client client, Vehicle vehicle, LocalDateTime rentStart) {
         this.rentId = UUID.randomUUID();
         this.client = client;

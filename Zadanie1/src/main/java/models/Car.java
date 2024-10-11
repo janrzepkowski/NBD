@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 public class Car extends MotorVehicle {
     private char segment; // A, B, C, D, E, F
 
+    public Car() {
+    }
+
     public Car(String plateNumber, String brand, int basePrice, char segment, double engineCapacity) {
         super(plateNumber, brand, basePrice, engineCapacity);
         this.segment = segment;

@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 public class MotorVehicle extends Vehicle {
     private double engineCapacity;
 
+    public MotorVehicle() {
+    }
+
     public MotorVehicle(String plateNumber, String brand, int basePrice, double engineCapacity) {
         super(plateNumber, brand, basePrice);
         this.engineCapacity = engineCapacity;

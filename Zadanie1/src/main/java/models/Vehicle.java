@@ -19,10 +19,13 @@ public class Vehicle {
     protected String brand;
 
     @Column(name = "basePrice")
-    protected final int basePrice;
+    protected int basePrice;
 
     @Column(name = "isAvailable")
     protected boolean isAvailable;
+
+    public Vehicle() {
+    }
 
     public Vehicle(String plateNumber, String brand, int basePrice) {
         this.plateNumber = plateNumber;
