@@ -2,24 +2,37 @@ package models;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "Rent")
+@Access(AccessType.FIELD)
 public class Rent {
-    private String rentId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID rentId;
+    @ManyToOne
+    @JoinColumn
     private Client client;
+    @ManyToOne
+    @JoinColumn
     private Vehicle vehicle;
+    @Column(name = "rentStart")
     private LocalDateTime rentStart;
+    @Column(name = "rentEnd")
     private LocalDateTime rentEnd;
+    @Column(name = "archived")
     private boolean archived;
 
     public Rent(Client client, Vehicle vehicle, LocalDateTime rentStart) {
-        this.rentId = UUID.randomUUID().toString();
+        this.rentId = UUID.randomUUID();
         this.client = client;
         this.vehicle = vehicle;
         this.rentStart = rentStart;
         this.archived = false;
     }
 
-    public String getRentId() {
+    public UUID getRentId() {
         return rentId;
     }
 
@@ -60,6 +73,6 @@ public class Rent {
     }
 
     public String getRentInfo() {
-        return "Rent ID: " + rentId + "\nClient: " + client.getFirstName() + " " + client.getLastName() + "\nVehicle: " + vehicle.getBrand() + "\nRent start: " + rentStart + "\nRent end: " + rentEnd + "\nRent days: " + getRentDays() + "\nRent price: " + getRentPrice();
+        return "Client: " + client.getFirstName() + " " + client.getLastName() + "\nVehicle: " + vehicle.getBrand() + "\nRent start: " + rentStart + "\nRent end: " + rentEnd + "\nRent days: " + getRentDays() + "\nRent price: " + getRentPrice();
     }
 }
