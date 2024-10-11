@@ -1,12 +1,22 @@
 package models;
 
 import java.util.UUID;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "Client")
+@Access(AccessType.FIELD)
 public class Client {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private final UUID clientId;
+    @Column(name = "firstName")
     private String firstName;
+    @Column(name = "lastName")
     private String lastName;
+    @Column(name = "phoneNumber")
     private String phoneNumber;
+    @Column(name = "archived")
     private boolean archived;
 
     public Client(String firstName, String lastName, String phoneNumber) {
@@ -49,8 +59,8 @@ public class Client {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setArchived(boolean archived) {
-        this.archived = archived;
+    public void setArchived() {
+        archived = true;
     }
 
     public String getClientInfo() {
