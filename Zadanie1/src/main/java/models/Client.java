@@ -9,7 +9,7 @@ import jakarta.persistence.*;
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private final UUID clientId;
+    private UUID clientId;
     @Column(name = "firstName")
     private String firstName;
     @Column(name = "lastName")
@@ -18,6 +18,9 @@ public class Client {
     private String phoneNumber;
     @Column(name = "archived")
     private boolean archived;
+
+    public Client() {
+    }
 
     public Client(String firstName, String lastName, String phoneNumber) {
         this.clientId = UUID.randomUUID();
@@ -59,8 +62,8 @@ public class Client {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setArchived() {
-        archived = true;
+    public void setArchived(boolean archived) {
+        this.archived = true;
     }
 
     public String getClientInfo() {

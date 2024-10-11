@@ -1,5 +1,8 @@
 package models;
 
+import jakarta.persistence.*;
+
+@MappedSuperclass
 public class MotorVehicle extends Vehicle {
     private double engineCapacity;
 

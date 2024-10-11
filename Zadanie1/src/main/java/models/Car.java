@@ -1,5 +1,9 @@
 package models;
 
+import jakarta.persistence.*;
+
+@Entity
+@DiscriminatorValue("car")
 public class Car extends MotorVehicle {
     private char segment; // A, B, C, D, E, F
 
