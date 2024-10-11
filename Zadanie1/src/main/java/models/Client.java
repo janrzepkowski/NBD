@@ -49,8 +49,8 @@ public class Client {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setArchived() {
-        archived = true;
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     public String getClientInfo() {

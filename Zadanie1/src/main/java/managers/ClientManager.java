@@ -1,37 +1,30 @@
 package managers;
 
 import models.Client;
+import repositories.ClientRepository;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class ClientManager {
-    private List<Client> clients;
+public class ClientManager implements Serializable {
+    private ClientRepository clientRepository;
 
-    public ClientManager(List<Client> clients) {
-        this.clients = clients;
+    public ClientManager(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
     }
 
-    public List<Client> getClients() {
-        return clients;
+    public Client registerClient(Client client) {
+        Optional<Client> existingClient = clientRepository.get(client.getClientId());
+        if (existingClient.isEmpty()) {
+            return clientRepository.add(client);
+        }
+        return existingClient.get();
     }
 
-    public Optional<Client> getClient(UUID clientId) {
-        return clients.stream().filter(client -> client.getClientId().equals(clientId)).findFirst();
+    public void unregisterClient(Client client) {
+        client.setArchived(true);
     }
 
-    public void registerClient(String firstName, String lastName, String phoneNumber) {
-        clients.add(new Client(firstName, lastName, phoneNumber));
-    }
-
-    public void unregisterClient(UUID clientId) {
-        clients.removeIf(client -> client.getClientId().equals(clientId));
-    }
-
-    public String getClientsInfo() {
-        StringBuilder clientsInfo = new StringBuilder();
-        clients.forEach(client -> clientsInfo.append(client.getClientInfo()).append("\n\n"));
-        return clientsInfo.toString();
-    }
 }
