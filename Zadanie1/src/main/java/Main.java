@@ -41,17 +41,17 @@ public class Main {
         List<Client> clientList = new ArrayList<>();
         ClientManager clientManager = new ClientManager(clientList);
 
-        clientManager.registerClient("1234567890", "John", "Doe", "555-1234");
-        clientManager.registerClient("0987654321", "Jane", "Smith", "555-5678");
-        clientManager.registerClient("1122334455", "Alice", "Johnson", "555-8765");
+        clientManager.registerClient("John", "Doe", "555-1234");
+        clientManager.registerClient("Jane", "Smith", "555-5678");
+        clientManager.registerClient("Alice", "Johnson", "555-8765");
 
         System.out.println("All Clients Info:");
         System.out.println(clientManager.getClientsInfo());
 
-        clientManager.unregisterClient("0987654321");
+        //clientManager.unregisterClient("0987654321");
 
-        System.out.println("All Clients Info After Unregistering Jane Smith:");
-        System.out.println(clientManager.getClientsInfo());
+        //System.out.println("All Clients Info After Unregistering Jane Smith:");
+       // System.out.println(clientManager.getClientsInfo());
 
     }
 }
