@@ -1,17 +1,27 @@
 package models;
 
 import java.util.UUID;
+import jakarta.persistence.*;
 
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type")
+@Access(AccessType.FIELD)
 public class Vehicle {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     protected UUID vehicleId;
 
+    @Column(name = "plateNumber")
     protected String plateNumber;
 
+    @Column(name = "brand")
     protected String brand;
 
+    @Column(name = "basePrice")
     protected final int basePrice;
 
+    @Column(name = "isAvailable")
     protected boolean isAvailable;
 
     public Vehicle(String plateNumber, String brand, int basePrice) {
