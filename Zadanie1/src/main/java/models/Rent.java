@@ -11,11 +11,11 @@ public class Rent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID rentId;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "client_id",nullable = false)
+    @ManyToOne
+    @JoinColumn
     private Client client;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "vehicle_id",nullable = false)
+    @ManyToOne
+    @JoinColumn
     private Vehicle vehicle;
     @Column(name = "rentStart")
     private LocalDateTime rentStart;
