@@ -3,6 +3,7 @@ package models;
 import jakarta.persistence.*;
 
 @Entity
+@Access(AccessType.FIELD)
 @DiscriminatorValue("Moped")
 public class Moped extends MotorVehicle {
 

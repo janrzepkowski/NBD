@@ -3,7 +3,8 @@ package models;
 import jakarta.persistence.*;
 
 @Entity
-@DiscriminatorValue("car")
+@Access(AccessType.FIELD)
+@DiscriminatorValue("Car")
 public class Car extends MotorVehicle {
     private char segment; // A, B, C, D, E, F
 

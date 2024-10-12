@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.util.UUID;
 import jakarta.persistence.*;
 
@@ -7,7 +8,7 @@ import jakarta.persistence.*;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
 @Access(AccessType.FIELD)
-public class Vehicle {
+public abstract class Vehicle implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected UUID vehicleId;

@@ -3,7 +3,8 @@ package models;
 import jakarta.persistence.*;
 
 @MappedSuperclass
-public class MotorVehicle extends Vehicle {
+@Access(AccessType.FIELD)
+public abstract class MotorVehicle extends Vehicle {
     private double engineCapacity;
 
     public MotorVehicle() {

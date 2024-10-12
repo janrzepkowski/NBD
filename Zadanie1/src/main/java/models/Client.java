@@ -1,21 +1,26 @@
 package models;
 
+import java.io.Serializable;
 import java.util.UUID;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Client")
 @Access(AccessType.FIELD)
-public class Client {
+public class Client implements Serializable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID clientId;
+
     @Column(name = "firstName")
     private String firstName;
+
     @Column(name = "lastName")
     private String lastName;
+
     @Column(name = "phoneNumber")
     private String phoneNumber;
+
     @Column(name = "archived")
     private boolean archived;
 

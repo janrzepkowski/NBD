@@ -1,26 +1,38 @@
 package models;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.sun.istack.NotNull;
 import jakarta.persistence.*;
+
 
 @Entity
 @Table(name = "Rent")
 @Access(AccessType.FIELD)
-public class Rent {
+public class Rent implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID rentId;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn
+    @NotNull
     private Client client;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE) //slajd 44
     @JoinColumn
+    @NotNull
     private Vehicle vehicle;
+
     @Column(name = "rentStart")
     private LocalDateTime rentStart;
+
     @Column(name = "rentEnd")
     private LocalDateTime rentEnd;
+
     @Column(name = "archived")
     private boolean archived;
 
