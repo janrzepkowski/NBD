@@ -6,9 +6,11 @@
   <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
     <class>models.Client</class>
     <class>models.Vehicle</class>
+    <class>models.MotorVehicle</class>
+    <class>models.Bicycle</class>
+    <class>models.Car</class>
+    <class>models.Moped</class>
     <class>models.Rent</class>
-    <class>managers.ClientManager</class>
-    <class>repositories.ClientRepository</class>
 
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <shared-cache-mode>NONE</shared-cache-mode>

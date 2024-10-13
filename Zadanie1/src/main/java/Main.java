@@ -1,6 +1,7 @@
-import managers.ClientManager;
-import repositories.ClientRepository;
-import models.Client;
+import models.*;
+import managers.*;
+import repositories.*;
+
 
 public class Main {
 
@@ -17,7 +18,7 @@ public class Main {
         // Pobieramy wszystkich klientów
         System.out.println("\nAll registered clients:");
         for (Client client : clientRepository.getAll()) {
-            System.out.println(client.getClientInfo());
+            System.out.println(client.getClientInfo() + "\n");
         }
 
         // Aktualizujemy dane klienta
@@ -36,6 +37,43 @@ public class Main {
         System.out.println("\nRemaining clients after removal:");
         for (Client client : clientRepository.getAll()) {
             System.out.println(client.getClientInfo());
+        }
+
+        // ------------------------- Pojazdy --------------------------------
+        Car car1 = new Car("BOX 111G", "Toyota", 100, 'C', 1.8);
+        Bicycle bicycle1 = new Bicycle("AMS 1", "Bianchi", 30);
+        Moped moped1 = new Moped("NO 5", "Piaggio", 50, 0.5);
+        VehicleRepository vehicleRepository = new VehicleRepository();
+        VehicleManager vehicleManager = new VehicleManager(vehicleRepository);
+
+        // Rejestracja
+        vehicleManager.registerVehicle(car1);
+        vehicleManager.registerVehicle(bicycle1);
+        vehicleManager.registerVehicle(moped1);
+
+        // Pobieramy wszystkie pojazdy
+        System.out.println("\nAll registered vehicles:");
+        for (Vehicle vehicle : vehicleRepository.getAll()) {
+            System.out.println(vehicle.getVehicleInfo() + "\n");
+        }
+
+        // Aktualizujemy dane pojazdu
+        car1.setPlateNumber("MAG 1C");
+        vehicleRepository.update(car1);
+
+        // Pobieramy zaktualizowany pojazd
+        Vehicle updatedCar = vehicleRepository.get(car1.getVehicleId());
+        System.out.println("\nUpdated vehicle info:");
+        System.out.println(updatedCar.getVehicleInfo());
+
+        // Usuwamy pojazd
+        System.out.println("\nRemoving bicycle...");
+        vehicleRepository.remove(bicycle1);
+
+        // Pozostale pojazdy po usunieciu roweru
+        System.out.println("\nRemaining vehicles after removal:");
+        for (Vehicle vehicle : vehicleRepository.getAll()) {
+            System.out.println(vehicle.getVehicleInfo() + "\n");
         }
     }
 }

@@ -9,8 +9,8 @@ import jakarta.persistence.*;
 @DiscriminatorColumn(name = "type")
 @Access(AccessType.FIELD)
 public abstract class Vehicle implements Serializable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     protected UUID vehicleId;
 
     @Column(name = "plateNumber")
@@ -25,14 +25,19 @@ public abstract class Vehicle implements Serializable {
     @Column(name = "isAvailable")
     protected boolean isAvailable;
 
+    @Column(name = "archived")
+    protected boolean archived;
+
     public Vehicle() {
     }
 
     public Vehicle(String plateNumber, String brand, int basePrice) {
+        this.vehicleId = UUID.randomUUID();
         this.plateNumber = plateNumber;
         this.brand = brand;
         this.basePrice = basePrice;
         this.isAvailable = true;
+        this.archived = false;
     }
 
     public UUID getVehicleId() {
@@ -59,8 +64,24 @@ public abstract class Vehicle implements Serializable {
         return isAvailable;
     }
 
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setPlateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
+    }
+
+    public void setBasePrice(int basePrice) {
+        this.basePrice = basePrice;
+    }
+
     public void setAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     public String getVehicleInfo() {

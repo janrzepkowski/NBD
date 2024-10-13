@@ -4,53 +4,32 @@ import models.Bicycle;
 import models.Car;
 import models.Moped;
 import models.Vehicle;
+import repositories.VehicleRepository;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public class VehicleManager {
-    private List<Vehicle> vehicles;
+public class VehicleManager implements Serializable {
 
-    public VehicleManager(List<Vehicle> vehicles) {
-        this.vehicles = vehicles;
-    }
+    private VehicleRepository vehicleRepository;
 
-    public List<Vehicle> getVehicles() {
-        return vehicles;
-    }
-
-    public Optional<Vehicle> getVehicle(String plateNumber) {
-        return vehicles.stream().filter(vehicle -> vehicle.getPlateNumber().equals(plateNumber)).findFirst();
-    }
-
-    public void registerBicycle(String plateNumber, String brand, int basePrice) {
-        if (vehicles.stream().anyMatch(vehicle -> vehicle.getPlateNumber().equals(plateNumber))) {
-            throw new IllegalArgumentException("Vehicle with plate number " + plateNumber + " already exists.");
+    public VehicleManager(VehicleRepository vehicleRepository) {
+        if (vehicleRepository == null) {
+            throw new IllegalArgumentException("vehicleRepository cannot be null");
+        } else {
+            this.vehicleRepository = vehicleRepository;
         }
-        vehicles.add(new Bicycle(plateNumber, brand, basePrice));
     }
 
-    public void registerCar(String plateNumber, String brand, int basePrice, char segment, double engineCapacity) {
-        if (vehicles.stream().anyMatch(vehicle -> vehicle.getPlateNumber().equals(plateNumber))) {
-            throw new IllegalArgumentException("Vehicle with plate number " + plateNumber + " already exists.");
+    public Vehicle registerVehicle(Vehicle vehicle) {
+        if (vehicleRepository.get(vehicle.getVehicleId()) != null) {
+            throw new IllegalArgumentException("Vehicle with the same ID already exists.");
         }
-        vehicles.add(new Car(plateNumber, brand, basePrice, segment, engineCapacity));
+        return vehicleRepository.add(vehicle);
     }
 
-    public void registerMoped(String plateNumber, String brand, int basePrice, double engineCapacity) {
-        if (vehicles.stream().anyMatch(vehicle -> vehicle.getPlateNumber().equals(plateNumber))) {
-            throw new IllegalArgumentException("Vehicle with plate number " + plateNumber + " already exists.");
-        }
-        vehicles.add(new Moped(plateNumber, brand, basePrice, engineCapacity));
-    }
-
-    public void removeVehicle(String plateNumber) {
-        vehicles.removeIf(vehicle -> vehicle.getPlateNumber().equals(plateNumber));
-    }
-
-    public String getVehiclesInfo() {
-        StringBuilder vehiclesInfo = new StringBuilder();
-        vehicles.forEach(vehicle -> vehiclesInfo.append(vehicle.getVehicleInfo()).append("\n\n"));
-        return vehiclesInfo.toString();
+    public void unregisterVehicle(Vehicle vehicle) {
+        vehicle.setArchived(true);
     }
 }
