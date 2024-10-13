@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ClientRepository implements Repository<Client> {
+
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
 
     @Override
@@ -57,14 +58,13 @@ public class ClientRepository implements Repository<Client> {
     }
 
     @Override
-    public boolean remove(Client client) {
+    public void remove(Client client) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             Client managedClient = em.contains(client) ? client : em.merge(client);
             em.remove(managedClient);
             em.getTransaction().commit();
-            return true;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -76,12 +76,11 @@ public class ClientRepository implements Repository<Client> {
     }
 
     @Override
-    public Client update(Client client) {
+    public void update(Client client) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            Client updatedClient = em.merge(client);
+            em.merge(client);
             em.getTransaction().commit();
-            return updatedClient;
         } catch (Exception e) {
             throw new RuntimeException("Failed to update client: " + client.getClientId(), e);
         }

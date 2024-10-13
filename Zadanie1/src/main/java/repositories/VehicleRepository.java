@@ -15,13 +15,10 @@ public class VehicleRepository implements Repository<Vehicle> {
 
     @Override
     public Vehicle get(UUID id) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             return em.find(Vehicle.class, id);
         } catch (Exception e) {
             throw new RuntimeException("Failed to get vehicle: " + id, e);
-        } finally {
-            em.close();
         }
     }
 
@@ -62,14 +59,13 @@ public class VehicleRepository implements Repository<Vehicle> {
     }
 
     @Override
-    public boolean remove(Vehicle vehicle) {
+    public void remove(Vehicle vehicle) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             Vehicle managedVehicle = em.contains(vehicle) ? vehicle : em.merge(vehicle);
             em.remove(managedVehicle);
             em.getTransaction().commit();
-            return true;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -81,13 +77,12 @@ public class VehicleRepository implements Repository<Vehicle> {
     }
 
     @Override
-    public Vehicle update(Vehicle vehicle) {
+    public void update(Vehicle vehicle) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            Vehicle updatedVehicle = em.merge(vehicle);
+            em.merge(vehicle);
             em.getTransaction().commit();
-            return updatedVehicle;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
