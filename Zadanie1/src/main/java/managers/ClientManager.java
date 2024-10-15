@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 public class ClientManager implements Serializable {
 
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
 
     public ClientManager(ClientRepository clientRepository) {
         if (clientRepository == null) {
@@ -25,6 +25,9 @@ public class ClientManager implements Serializable {
     }
 
     public void unregisterClient(Client client) {
-        client.setArchived(true);
+        if (client != null) {
+            client.setArchived(true);
+            clientRepository.update(client);
+        }
     }
 }

@@ -8,38 +8,22 @@ import java.util.UUID;
 
 public class ClientRepository implements Repository<Client> {
 
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
+    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
 
     @Override
     public Client get(UUID id) {
         try (EntityManager em = emf.createEntityManager()) {
             return em.find(Client.class, id);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get client: " + id, e);
         }
     }
-
 
     @Override
     public List<Client> getAll() {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            Query q = em.createQuery("FROM Client c", Client.class);
-            q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
-            List<Client> clients = q.getResultList();
-            em.getTransaction().commit();
-            return clients;
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RuntimeException("Failed to get all clients", e);
-        } finally {
-            em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            Query query = em.createQuery("FROM Client c", Client.class);
+            return query.getResultList();
         }
     }
-
 
     @Override
     public Client add(Client client) {
@@ -50,7 +34,9 @@ public class ClientRepository implements Repository<Client> {
             em.getTransaction().commit();
             return client;
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             throw new RuntimeException("Failed to add client: " + client.getClientId(), e);
         } finally {
             em.close();
@@ -77,13 +63,18 @@ public class ClientRepository implements Repository<Client> {
 
     @Override
     public void update(Client client) {
-        try (EntityManager em = emf.createEntityManager()) {
+        EntityManager em = emf.createEntityManager();
+        try {
             em.getTransaction().begin();
             em.merge(client);
             em.getTransaction().commit();
         } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             throw new RuntimeException("Failed to update client: " + client.getClientId(), e);
+        } finally {
+            em.close();
         }
     }
-
 }

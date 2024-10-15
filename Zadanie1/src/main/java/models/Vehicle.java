@@ -11,33 +11,33 @@ import jakarta.persistence.*;
 public abstract class Vehicle implements Serializable {
 
     @Id
-    protected UUID vehicleId;
+    private final UUID vehicleId = UUID.randomUUID();
+
+    @Version
+    private long version;
 
     @Column(name = "plateNumber")
-    protected String plateNumber;
+    private String plateNumber;
 
     @Column(name = "brand")
-    protected String brand;
+    private String brand;
 
     @Column(name = "basePrice")
-    protected int basePrice;
+    private int basePrice;
 
     @Column(name = "isAvailable")
-    protected boolean isAvailable;
+    private boolean isAvailable = true;
 
     @Column(name = "archived")
-    protected boolean archived;
+    private boolean archived = false;
 
     public Vehicle() {
     }
 
     public Vehicle(String plateNumber, String brand, int basePrice) {
-        this.vehicleId = UUID.randomUUID();
         this.plateNumber = plateNumber;
         this.brand = brand;
         this.basePrice = basePrice;
-        this.isAvailable = true;
-        this.archived = false;
     }
 
     public UUID getVehicleId() {

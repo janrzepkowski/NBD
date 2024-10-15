@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.UUID;
 import jakarta.persistence.*;
 
@@ -10,7 +11,10 @@ import jakarta.persistence.*;
 public class Client implements Serializable {
 
     @Id
-    private UUID clientId;
+    private final UUID clientId = UUID.randomUUID();
+
+    @Version
+    private long version;
 
     @Column(name = "firstName")
     private String firstName;
@@ -22,17 +26,15 @@ public class Client implements Serializable {
     private String phoneNumber;
 
     @Column(name = "archived")
-    private boolean archived;
+    private boolean archived = false;
 
     public Client() {
     }
 
     public Client(String firstName, String lastName, String phoneNumber) {
-        this.clientId = UUID.randomUUID();
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
-        this.archived = false;
     }
 
     public UUID getClientId() {
@@ -68,10 +70,30 @@ public class Client implements Serializable {
     }
 
     public void setArchived(boolean archived) {
-        this.archived = true;
+        this.archived = archived;
     }
 
-    public String getClientInfo() {
-        return "ID: " + clientId + "\nFirst name: " + firstName + "\nLast name: " + lastName + "\nPhone number: " + phoneNumber + "\n" + (archived ? "Archived" : "Active") + "\n";
+    @Override
+    public String toString() {
+        return "Client{" +
+                "clientId=" + clientId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", archived=" + archived +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return archived == client.archived && Objects.equals(clientId, client.clientId) && Objects.equals(firstName, client.firstName) && Objects.equals(lastName, client.lastName) && Objects.equals(phoneNumber, client.phoneNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(clientId, firstName, lastName, phoneNumber, archived);
     }
 }

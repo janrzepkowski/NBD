@@ -18,7 +18,7 @@ public class Main {
         // Pobieramy wszystkich klientów
         System.out.println("\nAll registered clients:");
         for (Client client : clientRepository.getAll()) {
-            System.out.println(client.getClientInfo() + "\n");
+            System.out.println(client.toString() + "\n");
         }
 
         // Aktualizujemy dane klienta
@@ -28,7 +28,7 @@ public class Main {
         // Pobieramy zaktualizowanego klienta
         Client updatedClient = clientRepository.get(client1.getClientId());
         System.out.println("\nUpdated client info:");
-        System.out.println(updatedClient.getClientInfo());
+        System.out.println(updatedClient.toString());
 
         // Usuwamy klienta
         System.out.println("\nRemoving client...");
@@ -36,7 +36,7 @@ public class Main {
 
         System.out.println("\nRemaining clients after removal:");
         for (Client client : clientRepository.getAll()) {
-            System.out.println(client.getClientInfo());
+            System.out.println(client.toString());
         }
 
         // ------------------------- Pojazdy --------------------------------

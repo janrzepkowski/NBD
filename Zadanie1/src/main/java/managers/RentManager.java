@@ -3,62 +3,37 @@ package managers;
 import models.Client;
 import models.Rent;
 import models.Vehicle;
+import repositories.RentRepository;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 public class RentManager {
-    private List<Rent> rents;
 
-    public RentManager(List<Rent> rents) {
-        this.rents = rents;
-    }
+    RentRepository rentRepository;
 
-    public List<Rent> getRents() {
-        return rents;
-    }
-
-    public List<Rent> getActiveRents() {
-        return rents.stream()
-                .filter(rent -> !rent.isArchived())
-                .collect(Collectors.toList());
-    }
-
-    public Optional<Rent> getRent(String rentId) {
-        return rents.stream().filter(rent -> rent.getRentId().equals(rentId)).findFirst();
-    }
-
-    public void rentVehicle(Client client, Vehicle vehicle, LocalDateTime rentStart) {
-        if (!vehicle.isAvailable()) {
-            throw new IllegalArgumentException("Vehicle is not available for rent.");
+    public RentManager(RentRepository rentRepository) {
+        if (rentRepository == null) {
+            throw new IllegalArgumentException("rentRepository cannot be null");
+        } else {
+            this.rentRepository = rentRepository;
         }
-        Rent newRent = new Rent(client, vehicle, rentStart);
-        rents.add(newRent);
-        vehicle.setAvailable(false);
     }
 
-    public void returnVehicle(Vehicle vehicle) {
-        rents.stream()
-                .filter(rent -> rent.getVehicle().equals(vehicle))
-                .findFirst()
-                .ifPresent(rent -> {
-                    rent.setRentEnd(LocalDateTime.now());
-                    rent.setArchived(true);
-                    vehicle.setAvailable(true);
-                });
+    public void rentVehicle(Client client, Vehicle vehicle, LocalDateTime rentStart) throws Exception {
+        if (!vehicle.isAvailable()) {
+            throw new Exception("Vehicle is already rented: " + vehicle.getVehicleId());
+        }
+        try {
+            rentRepository.bookVehicle(client, vehicle, rentStart);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("The rental vehicle failed: " + vehicle.getVehicleId(), e);
+        }
     }
 
-    public String getRentsInfo() {
-        StringBuilder rentsInfo = new StringBuilder();
-        rents.forEach(rent -> rentsInfo.append(rent.getRentInfo()).append("\n\n"));
-        return rentsInfo.toString();
-    }
-
-    public String getActiveRentsInfo() {
-        StringBuilder rentsInfo = new StringBuilder();
-        getActiveRents().forEach(rent -> rentsInfo.append(rent.getRentInfo()).append("\n\n"));
-        return rentsInfo.toString();
+    public void returnVehicle(UUID id, LocalDateTime rentEnd) {
+        Rent rent = rentRepository.get(id);
+        rent.endRent(rentEnd);
+        rentRepository.update(rent);
     }
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 @MappedSuperclass
 @Access(AccessType.FIELD)
 public abstract class MotorVehicle extends Vehicle {
+
     private double engineCapacity;
 
     public MotorVehicle() {

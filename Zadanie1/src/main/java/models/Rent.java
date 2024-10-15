@@ -2,6 +2,7 @@ package models;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 import com.sun.istack.NotNull;
@@ -14,15 +15,17 @@ import jakarta.persistence.*;
 public class Rent implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID rentId;
+    private final UUID rentId = UUID.randomUUID();
+
+    @Version
+    private long version;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn
     @NotNull
     private Client client;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE) //slajd 44
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn
     @NotNull
     private Vehicle vehicle;
@@ -31,20 +34,21 @@ public class Rent implements Serializable {
     private LocalDateTime rentStart;
 
     @Column(name = "rentEnd")
-    private LocalDateTime rentEnd;
+    private LocalDateTime rentEnd = null;
+
+    @Column(name = "rentCost")
+    private double rentCost = 0;
 
     @Column(name = "archived")
-    private boolean archived;
+    private boolean archived = false;
 
     public Rent() {
     }
 
     public Rent(Client client, Vehicle vehicle, LocalDateTime rentStart) {
-        this.rentId = UUID.randomUUID();
         this.client = client;
         this.vehicle = vehicle;
-        this.rentStart = rentStart;
-        this.archived = false;
+        this.rentStart = (rentStart == null) ? LocalDateTime.now() : rentStart;
     }
 
     public UUID getRentId() {
@@ -68,15 +72,17 @@ public class Rent implements Serializable {
     }
 
     public long getRentDays() {
-        return rentStart.toLocalDate().until(rentEnd.toLocalDate()).getDays();
+        if (rentEnd != null) {
+            return rentStart.toLocalDate().until(rentEnd.toLocalDate()).getDays();
+        }
+        return 0;
     }
 
-    public double getRentPrice() {
-        return vehicle.getActualRentalPrice() * getRentDays();
-    }
-
-    public void setRentEnd(LocalDateTime rentEnd) {
-        this.rentEnd = rentEnd;
+    public double getRentCost() {
+        if (rentEnd != null) {
+            return vehicle.getActualRentalPrice() * getRentDays();
+        }
+        return 0;
     }
 
     public boolean isArchived() {
@@ -87,7 +93,38 @@ public class Rent implements Serializable {
         this.archived = archived;
     }
 
-    public String getRentInfo() {
-        return "Client: " + client.getFirstName() + " " + client.getLastName() + "\nVehicle: " + vehicle.getBrand() + "\nRent start: " + rentStart + "\nRent end: " + rentEnd + "\nRent days: " + getRentDays() + "\nRent price: " + getRentPrice();
+    public void endRent(LocalDateTime endTime) {
+        if (this.rentEnd == null) {
+            this.rentEnd = (endTime == null || !endTime.isAfter(rentStart)) ? LocalDateTime.now() : endTime;
+            this.archived = true;
+            this.rentCost = getRentCost();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Rent{" +
+                "rentId=" + rentId +
+                ", version=" + version +
+                ", client=" + client +
+                ", vehicle=" + vehicle +
+                ", rentStart=" + rentStart +
+                ", rentEnd=" + rentEnd +
+                ", rentCost=" + rentCost +
+                ", archived=" + archived +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Rent rent = (Rent) o;
+        return version == rent.version && Double.compare(rentCost, rent.rentCost) == 0 && archived == rent.archived && Objects.equals(rentId, rent.rentId) && Objects.equals(client, rent.client) && Objects.equals(vehicle, rent.vehicle) && Objects.equals(rentStart, rent.rentStart) && Objects.equals(rentEnd, rent.rentEnd);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rentId, version, client, vehicle, rentStart, rentEnd, rentCost, archived);
     }
 }

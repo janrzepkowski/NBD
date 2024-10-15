@@ -2,7 +2,6 @@ package repositories;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.LockModeType;
 import jakarta.persistence.Persistence;
 import models.Vehicle;
 
@@ -11,34 +10,19 @@ import java.util.UUID;
 
 public class VehicleRepository implements Repository<Vehicle> {
 
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
+    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
 
     @Override
     public Vehicle get(UUID id) {
         try (EntityManager em = emf.createEntityManager()) {
             return em.find(Vehicle.class, id);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get vehicle: " + id, e);
         }
     }
 
     @Override
     public List<Vehicle> getAll() {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            List<Vehicle> vehicles = em.createQuery("FROM Vehicle v", Vehicle.class)
-                    .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                    .getResultList();
-            em.getTransaction().commit();
-            return vehicles;
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RuntimeException("Failed to get all vehicles", e);
-        } finally {
-            em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            return em.createQuery("FROM Vehicle v", Vehicle.class).getResultList();
         }
     }
 
@@ -51,7 +35,9 @@ public class VehicleRepository implements Repository<Vehicle> {
             em.getTransaction().commit();
             return vehicle;
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             throw new RuntimeException("Failed to add vehicle: " + vehicle.getVehicleId(), e);
         } finally {
             em.close();

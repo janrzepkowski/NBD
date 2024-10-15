@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 @Access(AccessType.FIELD)
 @DiscriminatorValue("Car")
 public class Car extends MotorVehicle {
+
     private char segment; // A, B, C, D, E, F
 
     public Car() {
