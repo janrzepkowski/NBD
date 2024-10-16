@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.UUID;
 import jakarta.persistence.*;
 
@@ -84,7 +85,29 @@ public abstract class Vehicle implements Serializable {
         this.archived = archived;
     }
 
-    public String getVehicleInfo() {
-        return "Plate number: " + plateNumber + "\nBrand: " + brand + "\nBase price: " + basePrice;
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "vehicleId=" + vehicleId +
+                ", version=" + version +
+                ", plateNumber='" + plateNumber + '\'' +
+                ", brand='" + brand + '\'' +
+                ", basePrice=" + basePrice +
+                ", isAvailable=" + isAvailable +
+                ", archived=" + archived +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vehicle vehicle = (Vehicle) o;
+        return version == vehicle.version && basePrice == vehicle.basePrice && isAvailable == vehicle.isAvailable && archived == vehicle.archived && Objects.equals(vehicleId, vehicle.vehicleId) && Objects.equals(plateNumber, vehicle.plateNumber) && Objects.equals(brand, vehicle.brand);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vehicleId, version, plateNumber, brand, basePrice, isAvailable, archived);
     }
 }

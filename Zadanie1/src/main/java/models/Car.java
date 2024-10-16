@@ -39,7 +39,7 @@ public class Car extends MotorVehicle {
     }
 
     @Override
-    public String getVehicleInfo() {
-        return super.getVehicleInfo() + "\nSegment: " + segment;
+    public String toString() {
+        return super.toString() + "\nSegment: " + segment;
     }
 }

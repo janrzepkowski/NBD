@@ -32,8 +32,8 @@ public abstract class MotorVehicle extends Vehicle {
     }
 
     @Override
-    public String getVehicleInfo() {
-        return super.getVehicleInfo() + "\nEngine capacity: " + engineCapacity + "\nActual rental price: " + getActualRentalPrice();
+    public String toString() {
+        return super.toString() + "\nEngine capacity: " + engineCapacity;
     }
 
 }

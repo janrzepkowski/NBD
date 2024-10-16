@@ -17,11 +17,11 @@ public class ClientManager implements Serializable {
         }
     }
 
-    public Client registerClient(Client client) {
+    public void registerClient(Client client) {
         if (clientRepository.get(client.getClientId()) != null) {
             throw new IllegalArgumentException("Client with the same ID already exists.");
         }
-        return clientRepository.add(client);
+        clientRepository.add(client);
     }
 
     public void unregisterClient(Client client) {
