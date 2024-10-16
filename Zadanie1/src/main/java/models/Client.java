@@ -3,6 +3,7 @@ package models;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -24,6 +25,9 @@ public class Client implements Serializable {
 
     @Column(name = "phoneNumber")
     private String phoneNumber;
+
+    @Column(name = "rents")
+    private int rents = 0;
 
     @Column(name = "archived")
     private boolean archived = false;
@@ -57,6 +61,10 @@ public class Client implements Serializable {
         return archived;
     }
 
+    public int getRents() {
+        return rents;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -71,6 +79,10 @@ public class Client implements Serializable {
 
     public void setArchived(boolean archived) {
         this.archived = archived;
+    }
+
+    public void setRents(int rents) {
+        this.rents = rents;
     }
 
     @Override

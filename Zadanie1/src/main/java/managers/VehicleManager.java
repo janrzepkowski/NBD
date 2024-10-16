@@ -30,6 +30,10 @@ public class VehicleManager implements Serializable {
     }
 
     public void unregisterVehicle(Vehicle vehicle) {
-        vehicle.setArchived(true);
+        if (vehicle != null) {
+            vehicle.setArchived(true);
+            vehicle.setAvailable(false);
+            vehicleRepository.update(vehicle);
+        }
     }
 }

@@ -1,17 +1,12 @@
 package repositories;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.Persistence;
+import jakarta.persistence.*;
 import models.Client;
 import models.Rent;
 import models.Vehicle;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class RentRepository implements Repository<Rent> {
@@ -88,18 +83,21 @@ public class RentRepository implements Repository<Rent> {
     public void bookVehicle(Client client, Vehicle vehicle, LocalDateTime rentStart) {
         EntityManager em = emf.createEntityManager();
         try {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put("jakarta.persistence.lock.timeout", 1000L); // Ustawienie timeoutu na 1000 ms (1 sekunda)
             em.getTransaction().begin();
-            Vehicle managedVehicle = em.find(Vehicle.class, vehicle.getVehicleId(), LockModeType.PESSIMISTIC_WRITE, properties);
-            if (!managedVehicle.isAvailable()) {
-                throw new IllegalStateException("Vehicle is not available: " + vehicle.getVehicleId());
-            }
-            Rent rent = new Rent(client, managedVehicle, rentStart);
+            Vehicle managedVehicle = em.find(Vehicle.class, vehicle.getVehicleId(), LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+            Client managedClient = em.find(Client.class, client.getClientId(), LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+            Rent rent = new Rent(managedClient, managedVehicle, rentStart);
             em.persist(rent);
             managedVehicle.setAvailable(false);
             em.merge(managedVehicle);
+            managedClient.setRents(managedClient.getRents() + 1);
+            em.merge(managedClient);
             em.getTransaction().commit();
+        } catch (OptimisticLockException ole) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RuntimeException("Optimistic lock exception: The vehicle or client was modified concurrently: " + vehicle.getVehicleId(), ole);
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

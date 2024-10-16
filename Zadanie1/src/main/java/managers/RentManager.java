@@ -21,8 +21,8 @@ public class RentManager {
     }
 
     public void rentVehicle(Client client, Vehicle vehicle, LocalDateTime rentStart) throws Exception {
-        if (!vehicle.isAvailable()) {
-            throw new Exception("Vehicle is already rented: " + vehicle.getVehicleId());
+        if (!vehicle.isAvailable() || client.getRents() >= 5) {
+            throw new Exception("Vehicle is not available: " + vehicle.getVehicleId() + " or client has too many rents: " + client.getClientId());
         }
         try {
             rentRepository.bookVehicle(client, vehicle, rentStart);
