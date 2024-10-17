@@ -1,10 +1,9 @@
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
+import jakarta.persistence.*;
 import managers.RentManager;
 import managers.ClientManager;
 import managers.VehicleManager;
 import models.Client;
+import models.Rent;
 import models.Vehicle;
 import models.Car;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,12 +14,6 @@ import repositories.VehicleRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import java.time.LocalDateTime;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.Callable;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RentManagerTest {
@@ -30,6 +23,8 @@ public class RentManagerTest {
     private static ClientManager clientManager;
     private static VehicleRepository vehicleRepository;
     private static VehicleManager vehicleManager;
+    private static EntityManager em;
+    private static EntityManager em1;
 
     @BeforeAll
     public static void setUp() {
@@ -41,7 +36,8 @@ public class RentManagerTest {
         clientManager = new ClientManager(clientRepository);
         vehicleRepository = new VehicleRepository(entityManager);
         vehicleManager = new VehicleManager(vehicleRepository);
-
+        em = entityManagerFactory.createEntityManager();
+        em1 = entityManagerFactory.createEntityManager();
     }
 
     @Test
@@ -93,5 +89,20 @@ public class RentManagerTest {
         assertTrue(actualMessage.contains(expectedMessage), "Unexpected exception message: " + actualMessage);
     }
 
-   
+    @Test
+    void testReturnVehicle() throws Exception {
+        Client client = new Client("Tyler", "Okonma", "1234567890");
+        Car car = new Car("ABC123", "Toyota", 100, 'B', 1.8);
+        clientRepository.add(client);
+        vehicleRepository.add(car);
+        rentManager.rentVehicle(client, car, LocalDateTime.now());
+
+        assertEquals(1, client.getRents());
+
+        Rent rent = rentRepository.getAll().get(0);
+        rentManager.returnVehicle(rent.getRentId(), LocalDateTime.now().plusDays(1));
+
+        assertEquals(0, client.getRents());
+        assertTrue(car.isAvailable());
+    }
 }

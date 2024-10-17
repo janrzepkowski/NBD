@@ -33,6 +33,7 @@ public class RentManager {
 
     public void returnVehicle(UUID id, LocalDateTime rentEnd) {
         Rent rent = rentRepository.get(id);
+        rentRepository.returnVehicle(rent);
         rent.endRent(rentEnd);
         rent.setArchived(true);
         rentRepository.update(rent);
