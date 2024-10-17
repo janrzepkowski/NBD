@@ -1,6 +1,6 @@
 package repositories;
 
-import jakarta.persistence.*;
+import jakarta.persistence.EntityManager;
 import models.Client;
 
 import java.util.List;
@@ -8,26 +8,24 @@ import java.util.UUID;
 
 public class ClientRepository implements Repository<Client> {
 
-    private final EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
+    private final EntityManager em;
+
+    public ClientRepository(EntityManager entityManager) {
+        this.em = entityManager;
+    }
 
     @Override
     public Client get(UUID id) {
-        try (EntityManager em = emf.createEntityManager()) {
-            return em.find(Client.class, id);
-        }
+        return em.find(Client.class, id);
     }
 
     @Override
     public List<Client> getAll() {
-        try (EntityManager em = emf.createEntityManager()) {
-            Query query = em.createQuery("FROM Client c", Client.class);
-            return query.getResultList();
-        }
+        return em.createQuery("FROM Client c", Client.class).getResultList();
     }
 
     @Override
     public Client add(Client client) {
-        EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(client);
@@ -38,14 +36,11 @@ public class ClientRepository implements Repository<Client> {
                 em.getTransaction().rollback();
             }
             throw new RuntimeException("Failed to add client: " + client.getClientId(), e);
-        } finally {
-            em.close();
         }
     }
 
     @Override
     public void remove(Client client) {
-        EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             Client managedClient = em.contains(client) ? client : em.merge(client);
@@ -56,14 +51,11 @@ public class ClientRepository implements Repository<Client> {
                 em.getTransaction().rollback();
             }
             throw new RuntimeException("Failed to remove client: " + client.getClientId(), e);
-        } finally {
-            em.close();
         }
     }
 
     @Override
     public void update(Client client) {
-        EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             em.merge(client);
@@ -73,8 +65,6 @@ public class ClientRepository implements Repository<Client> {
                 em.getTransaction().rollback();
             }
             throw new RuntimeException("Failed to update client: " + client.getClientId(), e);
-        } finally {
-            em.close();
         }
     }
 }
