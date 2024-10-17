@@ -97,4 +97,22 @@ public class RentRepository implements Repository<Rent> {
             throw new RuntimeException("The vehicle could not be booked: " + vehicle.getVehicleId(), e);
         }
     }
+
+    public void returnVehicle(Rent rent) {
+        try {
+            em.getTransaction().begin();
+            Vehicle vehicle = rent.getVehicle();
+            vehicle.setAvailable(true);
+            em.merge(vehicle);
+            Client client = rent.getClient();
+            client.setRents(client.getRents() - 1);
+            em.merge(client);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RuntimeException("The vehicle could not be returned: " + rent.getRentId(), e);
+        }
+    }
 }
