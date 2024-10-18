@@ -83,7 +83,7 @@ public class RentManagerTest {
             rentManager.rentVehicle(client, car6, LocalDateTime.now());
         });
 
-        String expectedMessage = "Client has too many rents: " + client.getClientId();
+        String expectedMessage = "Client has reached the maximum number of rents: " + client.getClientId();
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage), "Unexpected exception message: " + actualMessage);
