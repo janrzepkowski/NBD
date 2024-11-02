@@ -3,7 +3,7 @@ package models;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-@BsonDiscriminator
+@BsonDiscriminator(key = "_type")
 public abstract class MotorVehicle extends Vehicle {
 
     @BsonProperty("engineCapacity")

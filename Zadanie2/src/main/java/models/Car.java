@@ -3,7 +3,7 @@ package models;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-@BsonDiscriminator("car")
+@BsonDiscriminator(key = "_type", value = "car")
 public class Car extends MotorVehicle {
 
     @BsonProperty("segment")
@@ -29,8 +29,8 @@ public class Car extends MotorVehicle {
             case 'B': rentalPrice *= 1.2; break;
             case 'C': rentalPrice *= 1.3; break;
             case 'D': rentalPrice *= 1.4; break;
-            case 'E':
-            case 'F': rentalPrice *= 1.5; break;
+            case 'E': rentalPrice *= 1.5; break;
+            case 'F': rentalPrice *= 1.6; break;
         }
         return rentalPrice;
     }

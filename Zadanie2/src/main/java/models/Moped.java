@@ -2,7 +2,7 @@ package models;
 
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
-@BsonDiscriminator("Moped")
+@BsonDiscriminator(key = "_type", value = "moped")
 public class Moped extends MotorVehicle {
 
     public Moped() {
