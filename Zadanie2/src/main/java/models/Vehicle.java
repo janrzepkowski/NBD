@@ -1,18 +1,18 @@
 package models;
 
+import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
-@BsonDiscriminator(key = "_type")
-public abstract class Vehicle implements Serializable {
+@BsonDiscriminator(key = "_clazz", value = "vehicle")
+public abstract class Vehicle {
 
     @BsonId
-    private UUID vehicleId = UUID.randomUUID();
+    private final UUID vehicleId;
 
     @BsonProperty("plateNumber")
     private String plateNumber;
@@ -29,12 +29,12 @@ public abstract class Vehicle implements Serializable {
     @BsonProperty("archived")
     private boolean archived = false;
 
-    public Vehicle() {
-    }
-
-    public Vehicle(@BsonProperty("plateNumber") String plateNumber,
+    @BsonCreator
+    public Vehicle(@BsonId UUID vehicleId,
+                   @BsonProperty("plateNumber") String plateNumber,
                    @BsonProperty("brand") String brand,
                    @BsonProperty("basePrice") int basePrice) {
+        this.vehicleId = vehicleId != null ? vehicleId : UUID.randomUUID();
         this.plateNumber = plateNumber;
         this.brand = brand;
         this.basePrice = basePrice;

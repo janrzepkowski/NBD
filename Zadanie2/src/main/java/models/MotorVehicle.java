@@ -1,19 +1,25 @@
 package models;
 
+import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-@BsonDiscriminator(key = "_type")
+import java.util.UUID;
+
+@BsonDiscriminator(key = "_clazz", value = "motorVehicle")
 public abstract class MotorVehicle extends Vehicle {
 
     @BsonProperty("engineCapacity")
     private double engineCapacity;
 
-    public MotorVehicle() {
-    }
-
-    public MotorVehicle(String plateNumber, String brand, int basePrice, double engineCapacity) {
-        super(plateNumber, brand, basePrice);
+    @BsonCreator
+    public MotorVehicle(@BsonId UUID vehicleId,
+                        @BsonProperty("plateNumber") String plateNumber,
+                        @BsonProperty("brand") String brand,
+                        @BsonProperty("basePrice") int basePrice,
+                        @BsonProperty("engineCapacity") double engineCapacity) {
+        super(vehicleId, plateNumber, brand, basePrice);
         this.engineCapacity = engineCapacity;
     }
 

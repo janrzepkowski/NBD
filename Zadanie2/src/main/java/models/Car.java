@@ -1,20 +1,31 @@
 package models;
 
+import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-@BsonDiscriminator(key = "_type", value = "car")
+import java.util.UUID;
+
+@BsonDiscriminator(key = "_clazz", value = "car")
 public class Car extends MotorVehicle {
 
     @BsonProperty("segment")
     private char segment; // A, B, C, D, E, F
 
-    public Car() {
+    @BsonCreator
+    public Car(@BsonId UUID vehicleId,
+               @BsonProperty("plateNumber") String plateNumber,
+               @BsonProperty("brand") String brand,
+               @BsonProperty("basePrice") int basePrice,
+               @BsonProperty("segment") char segment,
+               @BsonProperty("engineCapacity") double engineCapacity) {
+        super(vehicleId, plateNumber, brand, basePrice, engineCapacity);
+        this.segment = segment;
     }
 
     public Car(String plateNumber, String brand, int basePrice, char segment, double engineCapacity) {
-        super(plateNumber, brand, basePrice, engineCapacity);
-        this.segment = segment;
+        this(null, plateNumber, brand, basePrice, segment, engineCapacity);
     }
 
     public char getSegment() {
@@ -24,13 +35,16 @@ public class Car extends MotorVehicle {
     @Override
     public double getActualRentalPrice() {
         double rentalPrice = super.getActualRentalPrice();
-        switch (segment) {
-            case 'A': rentalPrice *= 1.1; break;
-            case 'B': rentalPrice *= 1.2; break;
-            case 'C': rentalPrice *= 1.3; break;
-            case 'D': rentalPrice *= 1.4; break;
-            case 'E': rentalPrice *= 1.5; break;
-            case 'F': rentalPrice *= 1.6; break;
+        if (segment == 'A') {
+            rentalPrice *= 1.1;
+        } else if (segment == 'B') {
+            rentalPrice *= 1.2;
+        } else if (segment == 'C') {
+            rentalPrice *= 1.3;
+        } else if (segment == 'D') {
+            rentalPrice *= 1.4;
+        } else if (segment == 'E' || segment == 'F') {
+            rentalPrice *= 1.5;
         }
         return rentalPrice;
     }
