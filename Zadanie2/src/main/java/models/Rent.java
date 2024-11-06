@@ -1,5 +1,6 @@
 package models;
 
+import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
@@ -11,35 +12,42 @@ import java.util.UUID;
 public class Rent implements Serializable {
 
     @BsonId
-    private UUID rentId = UUID.randomUUID();
+    private final UUID rentId;
 
-    @BsonProperty(value = "client", useDiscriminator = true)
+    @BsonProperty("client")
     private Client client;
 
-    @BsonProperty(value = "vehicle", useDiscriminator = true)
+    @BsonProperty("vehicle")
     private Vehicle vehicle;
 
     @BsonProperty("rentStart")
     private LocalDateTime rentStart;
 
     @BsonProperty("rentEnd")
-    private LocalDateTime rentEnd = null;
+    private LocalDateTime rentEnd;
 
     @BsonProperty("rentCost")
-    private double rentCost = 0;
+    private double rentCost;
 
     @BsonProperty("archived")
-    private boolean archived = false;
+    private boolean archived;
 
-    public Rent() {
-    }
-
-    public Rent(@BsonProperty("client") Client client,
+    @BsonCreator
+    public Rent(@BsonId UUID rentId,
+                @BsonProperty("client") Client client,
                 @BsonProperty("vehicle") Vehicle vehicle,
                 @BsonProperty("rentStart") LocalDateTime rentStart) {
+        this.rentId = rentId != null ? rentId : UUID.randomUUID();
         this.client = client;
         this.vehicle = vehicle;
-        this.rentStart = (rentStart == null) ? LocalDateTime.now() : rentStart;
+        this.rentStart = rentStart != null ? rentStart : LocalDateTime.now();
+        this.rentEnd = null;
+        this.rentCost = 0;
+        this.archived = false;
+    }
+
+    public Rent(Client client, Vehicle vehicle, LocalDateTime rentStart) {
+        this(UUID.randomUUID(), client, vehicle, rentStart);
     }
 
     public UUID getRentId() {
