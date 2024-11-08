@@ -24,10 +24,10 @@ public abstract class Vehicle {
     private int basePrice;
 
     @BsonProperty("isAvailable")
-    private boolean isAvailable = true;
+    private boolean isAvailable;
 
     @BsonProperty("archived")
-    private boolean archived = false;
+    private boolean archived;
 
     @BsonCreator
     public Vehicle(@BsonId UUID vehicleId,
@@ -38,6 +38,8 @@ public abstract class Vehicle {
         this.plateNumber = plateNumber;
         this.brand = brand;
         this.basePrice = basePrice;
+        this.isAvailable = true;
+        this.archived = false;
     }
 
     public UUID getVehicleId() {
