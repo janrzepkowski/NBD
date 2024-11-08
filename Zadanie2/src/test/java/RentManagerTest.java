@@ -75,11 +75,13 @@ public class RentManagerTest {
             Car car = new Car("ABC123" + i, "Toyota" + i, 100 + i, 'B', 1.8 + i);
             vehicleRepository.create(car);
             rentRepository.bookVehicle(client, car, LocalDateTime.now().minusDays(i));
+            client = clientRepository.read(client.getClientId()); // Odświeżamy obiekt klienta
         }
         Car car6 = new Car("XYZ789", "Toyota6", 106, 'B', 2.4);
         vehicleRepository.create(car6);
 
-        Exception exception = assertThrows(Exception.class, () -> rentManager.rentVehicle(client, car6, LocalDateTime.now()));
+        Client finalClient = client;
+        Exception exception = assertThrows(Exception.class, () -> rentManager.rentVehicle(finalClient, car6, LocalDateTime.now()));
 
         String expectedMessage = "Client has reached the maximum number of rents: " + client.getClientId();
         String actualMessage = exception.getMessage();
