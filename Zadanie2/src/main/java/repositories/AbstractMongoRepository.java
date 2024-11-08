@@ -6,6 +6,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import models.*;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -23,6 +24,7 @@ public abstract class AbstractMongoRepository implements AutoCloseable {
                     PojoCodecProvider.builder()
                             .automatic(true)
                             .conventions(Conventions.DEFAULT_CONVENTIONS)
+                            .register(Vehicle.class, Car.class, MotorVehicle.class, Moped.class, Bicycle.class, Rent.class, Client.class)
                             .build()
             )
     );

@@ -6,6 +6,7 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -14,10 +15,10 @@ public class Rent implements Serializable {
     @BsonId
     private final UUID rentId;
 
-    @BsonProperty("client")
+    @BsonProperty(value = "client", useDiscriminator = true)
     private Client client;
 
-    @BsonProperty("vehicle")
+    @BsonProperty(value = "vehicle", useDiscriminator = true)
     private Vehicle vehicle;
 
     @BsonProperty("rentStart")
@@ -40,7 +41,7 @@ public class Rent implements Serializable {
         this.rentId = rentId != null ? rentId : UUID.randomUUID();
         this.client = client;
         this.vehicle = vehicle;
-        this.rentStart = rentStart != null ? rentStart : LocalDateTime.now();
+        this.rentStart = rentStart != null ? rentStart.truncatedTo(ChronoUnit.SECONDS) : LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         this.rentEnd = null;
         this.rentCost = 0;
         this.archived = false;
@@ -94,7 +95,7 @@ public class Rent implements Serializable {
 
     public void endRent(LocalDateTime endTime) {
         if (this.rentEnd == null) {
-            this.rentEnd = (endTime == null || !endTime.isAfter(rentStart)) ? LocalDateTime.now() : endTime;
+            this.rentEnd = (endTime == null || !endTime.isAfter(rentStart)) ? LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS) : endTime.truncatedTo(ChronoUnit.SECONDS);
             this.archived = true;
             this.rentCost = getRentCost();
         }
