@@ -95,12 +95,14 @@ public class RentManagerTest {
         vehicleRepository.create(car);
         rentManager.rentVehicle(client, car, LocalDateTime.now());
 
-        assertEquals(1, client.getRents());
+        Client foundClient1 = clientRepository.read(client.getClientId());
+        assertEquals(1, foundClient1.getRents());
 
         Rent rent = rentRepository.readAll().getFirst();
         rentManager.returnVehicle(rent.getRentId(), LocalDateTime.now().plusDays(1));
 
-        assertEquals(0, client.getRents());
+        Client foundClient2 = clientRepository.read(client.getClientId());
+        assertEquals(0, foundClient2.getRents());
         assertTrue(car.isAvailable());
     }
 }

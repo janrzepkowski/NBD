@@ -81,7 +81,13 @@ public class RentRepository extends AbstractMongoRepository {
         Bson vehicleFilter = Filters.eq("_id", rent.getVehicle().getVehicleId());
         Bson clientFilter = Filters.eq("_id", rent.getClient().getClientId());
 
-        vehicleCollection.findOneAndUpdate(vehicleFilter, Updates.set("isAvailable", true));
+        Vehicle existingVehicle = vehicleCollection.find(vehicleFilter).first();
+        if (existingVehicle == null || existingVehicle.isAvailable()) {
+            throw new IllegalStateException("Returning failed: Vehicle does not exist or is already available.");
+        }
+        existingVehicle.setAvailable(true);
+        vehicleCollection.replaceOne(vehicleFilter, existingVehicle);
+
         clientCollection.findOneAndUpdate(clientFilter, Updates.inc("rents", -1));
 
         rent.endRent(LocalDateTime.now());
