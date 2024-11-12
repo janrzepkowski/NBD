@@ -2,6 +2,7 @@ package models;
 
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.io.Serializable;
@@ -71,6 +72,7 @@ public class Rent implements Serializable {
         return rentEnd;
     }
 
+    @BsonIgnore
     public long getRentDays() {
         if (rentEnd != null) {
             return rentStart.toLocalDate().until(rentEnd.toLocalDate()).getDays();
