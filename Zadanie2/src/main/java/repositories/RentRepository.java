@@ -69,7 +69,10 @@ public class RentRepository extends AbstractMongoRepository {
 
         clientCollection.findOneAndUpdate(clientFilter, Updates.inc("rents", 1));
 
-        Rent rent = new Rent(client, vehicle, rentStart);
+        Client updatedClient = clientCollection.find(clientFilter).first();
+        Vehicle updatedVehicle = vehicleCollection.find(vehicleFilter).first();
+
+        Rent rent = new Rent(updatedClient, updatedVehicle, rentStart);
         rentCollection.insertOne(rent);
     }
 
@@ -90,12 +93,21 @@ public class RentRepository extends AbstractMongoRepository {
 
         clientCollection.findOneAndUpdate(clientFilter, Updates.inc("rents", -1));
 
+        Client updatedClient = clientCollection.find(clientFilter).first();
+        Vehicle updatedVehicle = vehicleCollection.find(vehicleFilter).first();
+
         rent.endRent(LocalDateTime.now());
+
+        Rent updatedRent = new Rent(rent.getRentId(), updatedClient, updatedVehicle, rent.getRentStart());
+        updatedRent.endRent(rent.getRentEnd());
+
         Bson rentFilter = Filters.eq("_id", rent.getRentId());
         Bson updates = Updates.combine(
-                Updates.set("rentEnd", rent.getRentEnd()),
-                Updates.set("rentCost", rent.getRentCost()),
-                Updates.set("archived", rent.isArchived())
+                Updates.set("client", updatedClient),
+                Updates.set("vehicle", updatedVehicle),
+                Updates.set("rentEnd", updatedRent.getRentEnd()),
+                Updates.set("rentCost", updatedRent.getRentCost()),
+                Updates.set("archived", updatedRent.isArchived())
         );
         rentCollection.findOneAndUpdate(rentFilter, updates);
     }
