@@ -1,5 +1,6 @@
 package repositories;
 
+import com.mongodb.client.ClientSession;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -53,62 +54,78 @@ public class RentRepository extends AbstractMongoRepository {
     }
 
     public void bookVehicle(Client client, Vehicle vehicle, LocalDateTime rentStart) {
-        MongoCollection<Vehicle> vehicleCollection = getDatabase().getCollection("vehicles", Vehicle.class);
-        MongoCollection<Client> clientCollection = getDatabase().getCollection("clients", Client.class);
-        MongoCollection<Rent> rentCollection = getDatabase().getCollection("rents", Rent.class);
+        try (ClientSession clientSession = getMongoClient().startSession()) {
+            clientSession.startTransaction();
 
-        Bson vehicleFilter = Filters.eq("_id", vehicle.getVehicleId());
-        Bson clientFilter = Filters.eq("_id", client.getClientId());
+            MongoCollection<Vehicle> vehicleCollection = getDatabase().getCollection("vehicles", Vehicle.class);
+            MongoCollection<Client> clientCollection = getDatabase().getCollection("clients", Client.class);
+            MongoCollection<Rent> rentCollection = getDatabase().getCollection("rents", Rent.class);
 
-        Vehicle existingVehicle = vehicleCollection.find(vehicleFilter).first();
-        if (existingVehicle == null || !existingVehicle.isAvailable()) {
-            throw new IllegalStateException("Booking failed: Vehicle does not exist or is already unavailable.");
+            Bson vehicleFilter = Filters.eq("_id", vehicle.getVehicleId());
+            Bson clientFilter = Filters.eq("_id", client.getClientId());
+
+            Vehicle existingVehicle = vehicleCollection.find(vehicleFilter).first();
+            if (existingVehicle == null || !existingVehicle.isAvailable()) {
+                throw new IllegalStateException("Booking failed: Vehicle does not exist or is already unavailable.");
+            }
+            existingVehicle.setAvailable(false);
+            vehicleCollection.replaceOne(clientSession, vehicleFilter, existingVehicle);
+
+            clientCollection.findOneAndUpdate(clientSession, clientFilter, Updates.inc("rents", 1));
+
+            Client updatedClient = clientCollection.find(clientFilter).first();
+            Vehicle updatedVehicle = vehicleCollection.find(vehicleFilter).first();
+
+            Rent rent = new Rent(updatedClient, updatedVehicle, rentStart);
+            rentCollection.insertOne(clientSession, rent);
+
+            clientSession.commitTransaction();
+        } catch (Exception e) {
+            throw new RuntimeException("Booking vehicle failed", e);
         }
-        existingVehicle.setAvailable(false);
-        vehicleCollection.replaceOne(vehicleFilter, existingVehicle);
-
-        clientCollection.findOneAndUpdate(clientFilter, Updates.inc("rents", 1));
-
-        Client updatedClient = clientCollection.find(clientFilter).first();
-        Vehicle updatedVehicle = vehicleCollection.find(vehicleFilter).first();
-
-        Rent rent = new Rent(updatedClient, updatedVehicle, rentStart);
-        rentCollection.insertOne(rent);
     }
 
     public void returnVehicle(Rent rent) {
-        MongoCollection<Vehicle> vehicleCollection = getDatabase().getCollection("vehicles", Vehicle.class);
-        MongoCollection<Client> clientCollection = getDatabase().getCollection("clients", Client.class);
-        MongoCollection<Rent> rentCollection = getDatabase().getCollection("rents", Rent.class);
+        try (ClientSession clientSession = getMongoClient().startSession()) {
+            clientSession.startTransaction();
 
-        Bson vehicleFilter = Filters.eq("_id", rent.getVehicle().getVehicleId());
-        Bson clientFilter = Filters.eq("_id", rent.getClient().getClientId());
+            MongoCollection<Vehicle> vehicleCollection = getDatabase().getCollection("vehicles", Vehicle.class);
+            MongoCollection<Client> clientCollection = getDatabase().getCollection("clients", Client.class);
+            MongoCollection<Rent> rentCollection = getDatabase().getCollection("rents", Rent.class);
 
-        Vehicle existingVehicle = vehicleCollection.find(vehicleFilter).first();
-        if (existingVehicle == null || existingVehicle.isAvailable()) {
-            throw new IllegalStateException("Returning failed: Vehicle does not exist or is already available.");
+            Bson vehicleFilter = Filters.eq("_id", rent.getVehicle().getVehicleId());
+            Bson clientFilter = Filters.eq("_id", rent.getClient().getClientId());
+
+            Vehicle existingVehicle = vehicleCollection.find(vehicleFilter).first();
+            if (existingVehicle == null || existingVehicle.isAvailable()) {
+                throw new IllegalStateException("Returning failed: Vehicle does not exist or is already available.");
+            }
+            existingVehicle.setAvailable(true);
+            vehicleCollection.replaceOne(clientSession, vehicleFilter, existingVehicle);
+
+            clientCollection.findOneAndUpdate(clientSession, clientFilter, Updates.inc("rents", -1));
+
+            Client updatedClient = clientCollection.find(clientFilter).first();
+            Vehicle updatedVehicle = vehicleCollection.find(vehicleFilter).first();
+
+            rent.endRent(LocalDateTime.now());
+
+            Rent updatedRent = new Rent(rent.getRentId(), updatedClient, updatedVehicle, rent.getRentStart());
+            updatedRent.endRent(rent.getRentEnd());
+
+            Bson rentFilter = Filters.eq("_id", rent.getRentId());
+            Bson updates = Updates.combine(
+                    Updates.set("client", updatedClient),
+                    Updates.set("vehicle", updatedVehicle),
+                    Updates.set("rentEnd", updatedRent.getRentEnd()),
+                    Updates.set("rentCost", updatedRent.getRentCost()),
+                    Updates.set("archived", updatedRent.isArchived())
+            );
+            rentCollection.findOneAndUpdate(clientSession, rentFilter, updates);
+
+            clientSession.commitTransaction();
+        } catch (Exception e) {
+            throw new RuntimeException("Returning vehicle failed", e);
         }
-        existingVehicle.setAvailable(true);
-        vehicleCollection.replaceOne(vehicleFilter, existingVehicle);
-
-        clientCollection.findOneAndUpdate(clientFilter, Updates.inc("rents", -1));
-
-        Client updatedClient = clientCollection.find(clientFilter).first();
-        Vehicle updatedVehicle = vehicleCollection.find(vehicleFilter).first();
-
-        rent.endRent(LocalDateTime.now());
-
-        Rent updatedRent = new Rent(rent.getRentId(), updatedClient, updatedVehicle, rent.getRentStart());
-        updatedRent.endRent(rent.getRentEnd());
-
-        Bson rentFilter = Filters.eq("_id", rent.getRentId());
-        Bson updates = Updates.combine(
-                Updates.set("client", updatedClient),
-                Updates.set("vehicle", updatedVehicle),
-                Updates.set("rentEnd", updatedRent.getRentEnd()),
-                Updates.set("rentCost", updatedRent.getRentCost()),
-                Updates.set("archived", updatedRent.isArchived())
-        );
-        rentCollection.findOneAndUpdate(rentFilter, updates);
     }
 }

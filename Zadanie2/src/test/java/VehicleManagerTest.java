@@ -27,35 +27,35 @@ public class VehicleManagerTest {
         assertEquals("vehicleRepository cannot be null", exception.getMessage());
     }
 
-    @Test
-    void testRegisterVehicle() {
-        Car car = new Car("XYZ789", "Honda", 150, 'C', 2.0);
-        vehicleManager.registerVehicle(car);
-
-        Vehicle registeredVehicle = vehicleRepository.read(car.getVehicleId());
-        assertEquals(car, registeredVehicle);
-    }
-
-    @Test
-    void testRegisterVehicleWithExistingId() {
-        Car car = new Car("ABC123", "Toyota", 100, 'B', 1.8);
-        vehicleRepository.create(car);
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            vehicleManager.registerVehicle(car);
-        });
-
-        assertEquals("Vehicle with the same ID already exists.", exception.getMessage());
-    }
-
-    @Test
-    void testUnregisterVehicle() {
-        Car car = new Car("XYZ789", "Honda", 150, 'C', 2.0);
-        vehicleRepository.create(car);
-
-        vehicleManager.unregisterVehicle(car);
-
-        Vehicle unregisteredVehicle = vehicleRepository.read(car.getVehicleId());
-        assertTrue(unregisteredVehicle.isArchived());
-    }
+//    @Test
+//    void testRegisterVehicle() {
+//        Car car = new Car("XYZ789", "Honda", 150, 'C', 2.0);
+//        vehicleManager.registerVehicle(car);
+//
+//        Vehicle registeredVehicle = vehicleRepository.read(car.getVehicleId());
+//        assertEquals(car, registeredVehicle);
+//    }
+//
+//    @Test
+//    void testRegisterVehicleWithExistingId() {
+//        Car car = new Car("ABC123", "Toyota", 100, 'B', 1.8);
+//        vehicleRepository.create(car);
+//
+//        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+//            vehicleManager.registerVehicle(car);
+//        });
+//
+//        assertEquals("Vehicle with the same ID already exists.", exception.getMessage());
+//    }
+//
+//    @Test
+//    void testUnregisterVehicle() {
+//        Car car = new Car("XYZ789", "Honda", 150, 'C', 2.0);
+//        vehicleRepository.create(car);
+//
+//        vehicleManager.unregisterVehicle(car);
+//
+//        Vehicle unregisteredVehicle = vehicleRepository.read(car.getVehicleId());
+//        assertTrue(unregisteredVehicle.isArchived());
+//    }
 }

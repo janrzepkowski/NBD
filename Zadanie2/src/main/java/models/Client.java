@@ -11,7 +11,7 @@ import java.util.UUID;
 public class Client implements Serializable {
 
     @BsonId
-    private UUID clientId;
+    private final UUID clientId;
 
     @BsonProperty("firstName")
     private String firstName;
