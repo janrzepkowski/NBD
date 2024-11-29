@@ -22,7 +22,7 @@ public class RentManager implements Serializable {
     }
 
     public void rentVehicle(Client client, Vehicle vehicle, LocalDateTime rentStart) throws Exception {
-        if (!vehicle.isAvailable()) {
+        if (!vehicle.getAvailable()) {
             throw new Exception("Vehicle is not available: " + vehicle.getVehicleId());
         }
         if (client.getRents() >= 5) {

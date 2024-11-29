@@ -132,7 +132,7 @@ class RentRepositoryTest {
         rentRepository.bookVehicle(client, car, LocalDateTime.now());
 
         Vehicle foundCar = vehicleRepository.read(car.getVehicleId());
-        assertFalse(foundCar.isAvailable());
+        assertFalse(foundCar.getAvailable());
 
         Client foundClient = clientRepository.read(client.getClientId());
         assertEquals(1, foundClient.getRents());

@@ -36,7 +36,7 @@ public class VehicleRepository extends AbstractMongoRepository {
                 Updates.set("plateNumber", vehicle.getPlateNumber()),
                 Updates.set("brand", vehicle.getBrand()),
                 Updates.set("basePrice", vehicle.getBasePrice()),
-                Updates.set("isAvailable", vehicle.isAvailable()),
+                Updates.set("isAvailable", vehicle.getAvailable()),
                 Updates.set("archived", vehicle.isArchived())
         );
         collection.findOneAndUpdate(filter, updates);

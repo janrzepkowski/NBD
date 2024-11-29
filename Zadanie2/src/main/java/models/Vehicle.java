@@ -23,7 +23,7 @@ public abstract class Vehicle {
     @BsonProperty("basePrice")
     private int basePrice;
 
-    @BsonProperty("isAvailable")
+    @BsonProperty("Available")
     private boolean isAvailable;
 
     @BsonProperty("archived")
@@ -62,7 +62,7 @@ public abstract class Vehicle {
         return basePrice;
     }
 
-    public boolean isAvailable() {
+    public boolean getAvailable() {
         return isAvailable;
     }
 

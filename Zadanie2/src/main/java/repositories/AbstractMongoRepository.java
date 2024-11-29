@@ -55,12 +55,12 @@ public abstract class AbstractMongoRepository implements AutoCloseable {
     }
 
     private void createVehiclesCollection() {
-        Bson isAvailableType = Filters.type("isAvailable", BsonType.BOOLEAN);
-        Bson isAvailableYes = Filters.eq("isAvailable", true);
-        Bson isAvailableNo = Filters.eq("isAvailable", false);
+        Bson isAvailableType = Filters.type("available", BsonType.BOOLEAN);
+        Bson isAvailableYes = Filters.eq("available", true);
+        Bson isAvailableNo = Filters.eq("available", false);
 
         ValidationOptions validationOptions = new ValidationOptions()
-                .validator(Filters.and(isAvailableType, isAvailableYes, isAvailableNo));
+                .validator(Filters.and(isAvailableType, Filters.or(isAvailableYes, isAvailableNo)));
 
         CreateCollectionOptions createCollectionOptions = new CreateCollectionOptions()
                 .validationOptions(validationOptions);

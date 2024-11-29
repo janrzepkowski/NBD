@@ -105,6 +105,6 @@ public class RentManagerTest {
 
         Client foundClient2 = clientRepository.read(client.getClientId());
         assertEquals(0, foundClient2.getRents());
-        assertTrue(car.isAvailable());
+        assertTrue(car.getAvailable());
     }
 }
