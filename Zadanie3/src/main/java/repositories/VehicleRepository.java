@@ -8,15 +8,18 @@ import models.Vehicle;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-public class VehicleRepository extends AbstractMongoRepository {
+public class VehicleRepository extends AbstractMongoRepository implements IVehicleRepository {
 
+    @Override
     public void create(Vehicle vehicle) {
         MongoCollection<Vehicle> collection = getDatabase().getCollection("vehicles", Vehicle.class);
         collection.insertOne(vehicle);
     }
 
+    @Override
     public Vehicle read(UUID id) {
         Bson filter = Filters.eq("_id", id);
         MongoCollection<Vehicle> collection = getDatabase().getCollection("vehicles", Vehicle.class);
@@ -24,11 +27,13 @@ public class VehicleRepository extends AbstractMongoRepository {
         return vehicles.first();
     }
 
-    public ArrayList<Vehicle> readAll() {
+    @Override
+    public List<Vehicle> readAll() {
         MongoCollection<Vehicle> collection = getDatabase().getCollection("vehicles", Vehicle.class);
         return collection.find().into(new ArrayList<>());
     }
 
+    @Override
     public void update(Vehicle vehicle) {
         Bson filter = Filters.eq("_id", vehicle.getVehicleId());
         MongoCollection<Vehicle> collection = getDatabase().getCollection("vehicles", Vehicle.class);
@@ -42,6 +47,7 @@ public class VehicleRepository extends AbstractMongoRepository {
         collection.findOneAndUpdate(filter, updates);
     }
 
+    @Override
     public void delete(Vehicle vehicle) {
         Bson filter = Filters.eq("_id", vehicle.getVehicleId());
         MongoCollection<Vehicle> collection = getDatabase().getCollection("vehicles", Vehicle.class);
