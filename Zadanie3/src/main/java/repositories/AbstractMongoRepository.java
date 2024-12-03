@@ -31,7 +31,7 @@ public abstract class AbstractMongoRepository implements AutoCloseable {
                     PojoCodecProvider.builder()
                             .automatic(true)
                             .conventions(Conventions.DEFAULT_CONVENTIONS)
-                            .register(Vehicle.class, Car.class, MotorVehicle.class, Moped.class, Bicycle.class, Rent.class, Client.class)
+                            .register(Vehicle.class, Car.class, Moped.class, Bicycle.class, Rent.class, Client.class)
                             .build()
             )
     );

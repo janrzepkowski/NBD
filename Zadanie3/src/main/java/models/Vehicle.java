@@ -1,6 +1,5 @@
 package models;
 
-
 import jakarta.json.bind.annotation.JsonbSubtype;
 import jakarta.json.bind.annotation.JsonbTypeInfo;
 import org.bson.codecs.pojo.annotations.BsonCreator;
@@ -13,10 +12,9 @@ import java.util.UUID;
 
 @BsonDiscriminator(key = "_clazz", value = "vehicle")
 @JsonbTypeInfo({
-        @JsonbSubtype(alias = "BICYCLE", type = Bicycle.class),
-        @JsonbSubtype(alias = "MOTOR_VEHICLE", type = MotorVehicle.class)
+        @JsonbSubtype(alias = "CAR", type = Car.class),
+        @JsonbSubtype(alias = "MOPED", type = Moped.class)
 })
-
 public abstract class Vehicle {
 
     @BsonId
