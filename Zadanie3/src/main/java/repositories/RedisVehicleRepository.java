@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class RedisVehicleRepository extends AbstractRedisRepository {
+public class RedisVehicleRepository extends AbstractRedisRepository implements IVehicleRepository {
 
     private final String hashPrefix = "vehicle:";
     private final Jsonb jsonb = JsonbBuilder.create();
@@ -18,9 +18,10 @@ public class RedisVehicleRepository extends AbstractRedisRepository {
         this.initDbConnection();
     }
 
+    @Override
     public void create(Vehicle vehicle) {
         try {
-            String key = hashPrefix + vehicle.getVehicleId().toString();
+            String key = hashPrefix + vehicle.getVehicleId();
             String json = jsonb.toJson(vehicle);
             pool.set(key, json);
             pool.expire(key, 300);
@@ -29,29 +30,10 @@ public class RedisVehicleRepository extends AbstractRedisRepository {
         }
     }
 
-    public void delete(UUID vehicleId) {
-        try {
-            String key = hashPrefix + vehicleId.toString();
-            pool.del(key);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void update(Vehicle vehicle) {
-        try {
-            String key = hashPrefix + vehicle.getVehicleId().toString();
-            String json = jsonb.toJson(vehicle);
-            pool.set(key, json);
-            pool.expire(key, 300);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+    @Override
     public Vehicle read(UUID vehicleId) {
         try {
-            String key = hashPrefix + vehicleId.toString();
+            String key = hashPrefix + vehicleId;
             String json = pool.get(key);
             if (json == null) {
                 return null;
@@ -63,19 +45,43 @@ public class RedisVehicleRepository extends AbstractRedisRepository {
         }
     }
 
+    @Override
     public List<Vehicle> readAll() {
         try {
-            List<Vehicle> vehicles = new ArrayList<>();
             Set<String> keys = pool.keys(hashPrefix + "*");
+            List<Vehicle> vehicles = new ArrayList<>();
             for (String key : keys) {
                 String json = pool.get(key);
-                Vehicle vehicle = jsonb.fromJson(json, Vehicle.class);
-                vehicles.add(vehicle);
+                if (json != null) {
+                    vehicles.add(jsonb.fromJson(json, Vehicle.class));
+                }
             }
             return vehicles;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public void update(Vehicle vehicle) {
+        try {
+            String key = hashPrefix + vehicle.getVehicleId();
+            String json = jsonb.toJson(vehicle);
+            pool.set(key, json);
+            pool.expire(key, 300);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void delete(Vehicle vehicle) {
+        try {
+            String key = hashPrefix + vehicle.getVehicleId();
+            pool.del(key);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

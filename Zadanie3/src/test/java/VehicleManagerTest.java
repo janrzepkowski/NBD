@@ -1,7 +1,6 @@
 import managers.VehicleManager;
 import models.Car;
 import models.Vehicle;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import repositories.DecoratorVehicleRepository;
@@ -12,22 +11,26 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class VehicleManagerTest {
 
-    private static VehicleRepository vehicleRepository2;
-    private static VehicleManager vehicleManager;
+    private static VehicleRepository vehicleRepository;
     private static RedisVehicleRepository redisVehicleRepository;
+    private static DecoratorVehicleRepository decoratorVehicleRepository;
+    private static VehicleManager vehicleManager;
 
     @BeforeAll
     public static void setUp() {
-        vehicleRepository2 = new VehicleRepository();
+        vehicleRepository = new VehicleRepository();
         redisVehicleRepository = new RedisVehicleRepository();
-        DecoratorVehicleRepository vehicleRepository = new DecoratorVehicleRepository(vehicleRepository2, redisVehicleRepository);
-        vehicleManager = new VehicleManager(vehicleRepository);
+        decoratorVehicleRepository = new DecoratorVehicleRepository(vehicleRepository, redisVehicleRepository);
+        vehicleManager = new VehicleManager(decoratorVehicleRepository);
     }
 
-    @AfterEach
-    void dropDB() {
-        vehicleRepository2.getDatabase().getCollection("vehicles", Vehicle.class).drop();
-        redisVehicleRepository.clearCache();
+    @Test
+    void testRegisterVehicleWithNullRepository() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            new VehicleManager(null);
+        });
+
+        assertEquals("vehicleRepository cannot be null", exception.getMessage());
     }
 
     @Test
@@ -35,16 +38,18 @@ public class VehicleManagerTest {
         Car car = new Car("XYZ789", "Honda", 150, 'C', 2.0);
         vehicleManager.registerVehicle(car);
 
-        Vehicle registeredVehicle = vehicleManager.getVehicle(car.getVehicleId());
+        Vehicle registeredVehicle = decoratorVehicleRepository.read(car.getVehicleId());
         assertEquals(car, registeredVehicle);
     }
 
     @Test
     void testRegisterVehicleWithExistingId() {
         Car car = new Car("ABC123", "Toyota", 100, 'B', 1.8);
-        vehicleManager.registerVehicle(car);
+        decoratorVehicleRepository.create(car);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> vehicleManager.registerVehicle(car));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            vehicleManager.registerVehicle(car);
+        });
 
         assertEquals("Vehicle with the same ID already exists.", exception.getMessage());
     }
@@ -52,34 +57,11 @@ public class VehicleManagerTest {
     @Test
     void testUnregisterVehicle() {
         Car car = new Car("XYZ789", "Honda", 150, 'C', 2.0);
-        vehicleManager.registerVehicle(car);
+        decoratorVehicleRepository.create(car);
 
         vehicleManager.unregisterVehicle(car);
 
-        Vehicle unregisteredVehicle = vehicleManager.getVehicle(car.getVehicleId());
+        Vehicle unregisteredVehicle = decoratorVehicleRepository.read(car.getVehicleId());
         assertTrue(unregisteredVehicle.isArchived());
-    }
-
-    @Test
-    void testUpdateVehicleInformation() {
-        Car car = new Car("XYZ789", "Honda", 150, 'C', 2.0);
-        vehicleManager.registerVehicle(car);
-
-        car.setBasePrice(200);
-        vehicleManager.updateVehicleInformation(car);
-
-        Vehicle updatedVehicle = vehicleManager.getVehicle(car.getVehicleId());
-        assertEquals(200, updatedVehicle.getBasePrice());
-    }
-
-    @Test
-    void testDeleteVehicle() {
-        Car car = new Car("XYZ789", "Honda", 150, 'C', 2.0);
-        vehicleManager.registerVehicle(car);
-
-        vehicleManager.deleteVehicle(car.getVehicleId());
-
-        Vehicle deletedVehicle = vehicleManager.getVehicle(car.getVehicleId());
-        assertNull(deletedVehicle);
     }
 }

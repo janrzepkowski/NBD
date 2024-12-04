@@ -1,5 +1,7 @@
 package models;
 
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 import jakarta.json.bind.annotation.JsonbSubtype;
 import jakarta.json.bind.annotation.JsonbTypeInfo;
 import org.bson.codecs.pojo.annotations.BsonCreator;
@@ -13,33 +15,41 @@ import java.util.UUID;
 @BsonDiscriminator(key = "_clazz", value = "vehicle")
 @JsonbTypeInfo({
         @JsonbSubtype(alias = "CAR", type = Car.class),
-        @JsonbSubtype(alias = "MOPED", type = Moped.class)
+        @JsonbSubtype(alias = "MOPED", type = Moped.class),
+        @JsonbSubtype(alias = "BICYCLE", type = Bicycle.class),
 })
 public abstract class Vehicle {
 
     @BsonId
-    private final UUID vehicleId;
+    @JsonbProperty("vehicleId")
+    private UUID vehicleId;
 
     @BsonProperty("plateNumber")
+    @JsonbProperty("plateNumber")
     private String plateNumber;
 
     @BsonProperty("brand")
-    private final String brand;
+    @JsonbProperty("brand")
+    private String brand;
 
     @BsonProperty("basePrice")
+    @JsonbProperty("basePrice")
     private int basePrice;
 
     @BsonProperty("Available")
+    @JsonbProperty("Available")
     private boolean isAvailable;
 
     @BsonProperty("archived")
+    @JsonbProperty("archived")
     private boolean archived;
 
     @BsonCreator
-    public Vehicle(@BsonId UUID vehicleId,
-                   @BsonProperty("plateNumber") String plateNumber,
-                   @BsonProperty("brand") String brand,
-                   @BsonProperty("basePrice") int basePrice) {
+    @JsonbCreator
+    public Vehicle(@BsonId @JsonbProperty("vehicleId") UUID vehicleId,
+                   @BsonProperty("plateNumber") @JsonbProperty("plateNumber") String plateNumber,
+                   @BsonProperty("brand") @JsonbProperty("brand") String brand,
+                   @BsonProperty("basePrice") @JsonbProperty("basePrice") int basePrice) {
         this.vehicleId = vehicleId != null ? vehicleId : UUID.randomUUID();
         this.plateNumber = plateNumber;
         this.brand = brand;
@@ -78,6 +88,10 @@ public abstract class Vehicle {
 
     public void setPlateNumber(String plateNumber) {
         this.plateNumber = plateNumber;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
     public void setBasePrice(int basePrice) {

@@ -4,6 +4,8 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 
 import java.util.UUID;
 
@@ -11,10 +13,11 @@ import java.util.UUID;
 public class Bicycle extends Vehicle {
 
     @BsonCreator
-    public Bicycle(@BsonId UUID vehicleId,
-                   @BsonProperty("plateNumber") String plateNumber,
-                   @BsonProperty("brand") String brand,
-                   @BsonProperty("basePrice") int basePrice) {
+    @JsonbCreator
+    public Bicycle(@BsonId @JsonbProperty("vehicleId") UUID vehicleId,
+                   @BsonProperty("plateNumber") @JsonbProperty("plateNumber") String plateNumber,
+                   @BsonProperty("brand") @JsonbProperty("brand") String brand,
+                   @BsonProperty("basePrice") @JsonbProperty("basePrice") int basePrice) {
         super(vehicleId, plateNumber, brand, basePrice);
     }
 

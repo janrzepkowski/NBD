@@ -15,11 +15,17 @@ public class DecoratorVehicleRepository implements IVehicleRepository {
     }
 
     @Override
+    public void create(Vehicle vehicle) {
+        repository.create(vehicle);
+        redisVehicleRepository.create(vehicle);
+    }
+
+    @Override
     public Vehicle read(UUID vehicleId) {
         Vehicle vehicle = redisVehicleRepository.read(vehicleId);
         if (vehicle == null) {
             vehicle = repository.read(vehicleId);
-            if (vehicle != null && vehicle.getAvailable()) {
+            if (vehicle != null && !vehicle.isArchived()) {
                 redisVehicleRepository.create(vehicle);
             }
             return vehicle;
@@ -31,32 +37,25 @@ public class DecoratorVehicleRepository implements IVehicleRepository {
     public List<Vehicle> readAll() {
         List<Vehicle> vehicles = repository.readAll();
         for (Vehicle vehicle : vehicles) {
-            if (vehicle.getAvailable()) {
+            if (!vehicle.isArchived())
                 redisVehicleRepository.create(vehicle);
-            }
         }
         return vehicles;
     }
 
     @Override
-    public void create(Vehicle vehicle) {
-        repository.create(vehicle);
-        redisVehicleRepository.create(vehicle);
+    public void update(Vehicle vehicle) {
+        repository.update(vehicle);
+        if (vehicle.isArchived()) {
+            redisVehicleRepository.delete(vehicle);
+        } else {
+            redisVehicleRepository.update(vehicle);
+        }
     }
 
     @Override
     public void delete(Vehicle vehicle) {
-        redisVehicleRepository.delete(vehicle.getVehicleId());
+        redisVehicleRepository.delete(vehicle);
         repository.delete(vehicle);
-    }
-
-    @Override
-    public void update(Vehicle vehicle) {
-        repository.update(vehicle);
-        if (!vehicle.getAvailable()) {
-            redisVehicleRepository.delete(vehicle.getVehicleId());
-        } else {
-            redisVehicleRepository.update(vehicle);
-        }
     }
 }

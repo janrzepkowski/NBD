@@ -45,10 +45,12 @@ public class VehicleManager implements Serializable {
         }
     }
 
-    public void unregisterVehicle(Vehicle vehicle) {
-        if (vehicle != null) {
-            vehicle.setArchived(true);
-            vehicleRepository.update(vehicle);
+    public void deleteVehicle(UUID vehicleId) {
+        if (vehicleExists(vehicleId)) {
+            Vehicle vehicle = vehicleRepository.read(vehicleId);
+            if (vehicle != null) {
+                vehicleRepository.delete(vehicle);
+            }
         }
     }
 
@@ -58,9 +60,10 @@ public class VehicleManager implements Serializable {
         }
     }
 
-    public void deleteVehicle(UUID vehicleId) {
-        if (vehicleExists(vehicleId)) {
-            vehicleRepository.delete(vehicleRepository.read(vehicleId));
+    public void unregisterVehicle(Vehicle vehicle) {
+        if (vehicle != null && vehicleExists(vehicle.getVehicleId())) {
+            vehicle.setArchived(true);
+            vehicleRepository.update(vehicle);
         }
     }
 }

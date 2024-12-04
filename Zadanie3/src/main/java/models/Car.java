@@ -4,6 +4,8 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import jakarta.json.bind.annotation.JsonbCreator;
+import jakarta.json.bind.annotation.JsonbProperty;
 
 import java.util.UUID;
 
@@ -11,18 +13,21 @@ import java.util.UUID;
 public class Car extends Vehicle {
 
     @BsonProperty("segment")
+    @JsonbProperty("segment")
     private char segment; // A, B, C, D, E, F
 
     @BsonProperty("engineCapacity")
+    @JsonbProperty("engineCapacity")
     private double engineCapacity;
 
     @BsonCreator
-    public Car(@BsonId UUID vehicleId,
-               @BsonProperty("plateNumber") String plateNumber,
-               @BsonProperty("brand") String brand,
-               @BsonProperty("basePrice") int basePrice,
-               @BsonProperty("segment") char segment,
-               @BsonProperty("engineCapacity") double engineCapacity) {
+    @JsonbCreator
+    public Car(@BsonId @JsonbProperty("vehicleId") UUID vehicleId,
+               @BsonProperty("plateNumber") @JsonbProperty("plateNumber") String plateNumber,
+               @BsonProperty("brand") @JsonbProperty("brand") String brand,
+               @BsonProperty("basePrice") @JsonbProperty("basePrice") int basePrice,
+               @BsonProperty("segment") @JsonbProperty("segment") char segment,
+               @BsonProperty("engineCapacity") @JsonbProperty("engineCapacity") double engineCapacity) {
         super(vehicleId, plateNumber, brand, basePrice);
         this.segment = segment;
         this.engineCapacity = engineCapacity;
