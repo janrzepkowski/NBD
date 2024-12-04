@@ -40,7 +40,6 @@ public class RedisVehicleRepository extends AbstractRedisRepository implements I
             }
             return jsonb.fromJson(json, Vehicle.class);
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }

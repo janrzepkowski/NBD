@@ -1,7 +1,6 @@
 import models.Car;
 import models.Moped;
 import models.Vehicle;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import repositories.RedisVehicleRepository;
@@ -10,15 +9,9 @@ import java.util.List;
 
 public class RedisVehicleTest {
 
-    private final RedisVehicleRepository redisVehicleRepository = new RedisVehicleRepository();
-
-    @AfterEach
-    public void clearCache() {
-        redisVehicleRepository.clearCache();
-    }
-
     @Test
     public void createAndReadVehicleFromRedis() {
+        RedisVehicleRepository redisVehicleRepository = new RedisVehicleRepository();
         Car car = new Car("XYZ789", "Honda", 150, 'C', 2.0);
         redisVehicleRepository.create(car);
 
@@ -28,6 +21,7 @@ public class RedisVehicleTest {
 
     @Test
     public void readAllVehiclesFromRedis() {
+        RedisVehicleRepository redisVehicleRepository = new RedisVehicleRepository();
         Car car1 = new Car("XYZ789", "Honda", 150, 'C', 2.0);
         Car car2 = new Car("ABC123", "Toyota", 100, 'B', 1.8);
         Moped moped = new Moped("MOP456", "Vespa", 80, 1.5);
@@ -46,6 +40,7 @@ public class RedisVehicleTest {
 
     @Test
     public void clearCacheTest() {
+        RedisVehicleRepository redisVehicleRepository = new RedisVehicleRepository();
         Car car1 = new Car("XYZ789", "Honda", 150, 'C', 2.0);
         Car car2 = new Car("ABC123", "Toyota", 100, 'B', 1.8);
         redisVehicleRepository.create(car1);
@@ -58,6 +53,7 @@ public class RedisVehicleTest {
 
     @Test
     public void loseConnectionWithRedis() {
+        RedisVehicleRepository redisVehicleRepository = new RedisVehicleRepository();
         Car car = new Car("XYZ789", "Honda", 150, 'C', 2.0);
         redisVehicleRepository.create(car);
         redisVehicleRepository.close();
