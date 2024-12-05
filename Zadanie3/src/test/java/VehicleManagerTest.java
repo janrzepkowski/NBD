@@ -64,4 +64,15 @@ public class VehicleManagerTest {
         Vehicle unregisteredVehicle = decoratorVehicleRepository.read(car.getVehicleId());
         assertTrue(unregisteredVehicle.isArchived());
     }
+
+    @Test
+    void testReadVehicleWithRedisConnectionLoss() {
+        Car car = new Car("XYZ789", "Honda", 150, 'C', 2.0);
+        vehicleManager.registerVehicle(car);
+
+        redisVehicleRepository.close();
+
+        Vehicle vehicleFromMongo = vehicleManager.getVehicle(car.getVehicleId());
+        assertEquals(car, vehicleFromMongo);
+    }
 }
