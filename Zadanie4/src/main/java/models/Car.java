@@ -13,7 +13,7 @@ public class Car extends Vehicle {
     private final double engineCapacity;
 
     public Car(UUID vehicleId, String plateNumber, String brand, int basePrice, char segment, double engineCapacity) {
-        super(vehicleId, plateNumber, brand, basePrice);
+        super(vehicleId, plateNumber, brand, basePrice, "car");
         this.segment = segment;
         this.engineCapacity = engineCapacity;
     }

@@ -10,7 +10,7 @@ import java.util.UUID;
 public class Bicycle extends Vehicle {
 
     public Bicycle(UUID vehicleId, String plateNumber, String brand, int basePrice) {
-        super(vehicleId, plateNumber, brand, basePrice);
+        super(vehicleId, plateNumber, brand, basePrice, "bicycle");
     }
 
     public Bicycle(String plateNumber, String brand, int basePrice) {

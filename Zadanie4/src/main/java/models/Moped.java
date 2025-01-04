@@ -12,7 +12,7 @@ public class Moped extends Vehicle {
     private final double engineCapacity;
 
     public Moped(UUID vehicleId, String plateNumber, String brand, int basePrice, double engineCapacity) {
-        super(vehicleId, plateNumber, brand, basePrice);
+        super(vehicleId, plateNumber, brand, basePrice, "moped");
         this.engineCapacity = engineCapacity;
     }
 

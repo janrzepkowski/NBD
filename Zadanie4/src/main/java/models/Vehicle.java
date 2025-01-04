@@ -20,14 +20,16 @@ public abstract class Vehicle {
     private int basePrice;
     private boolean isAvailable;
     private boolean archived;
+    private String discriminator;
 
-    public Vehicle(UUID vehicleId, String plateNumber, String brand, int basePrice) {
+    public Vehicle(UUID vehicleId, String plateNumber, String brand, int basePrice, String discriminator) {
         this.vehicleId = vehicleId != null ? vehicleId : UUID.randomUUID();
         this.plateNumber = plateNumber;
         this.brand = brand;
         this.basePrice = basePrice;
         this.isAvailable = true;
         this.archived = false;
+        this.discriminator = discriminator;
     }
 
     public UUID getVehicleId() {
@@ -54,6 +56,10 @@ public abstract class Vehicle {
         return archived;
     }
 
+    public String getDiscriminator() {
+        return discriminator;
+    }
+
     public void setPlateNumber(String plateNumber) {
         this.plateNumber = plateNumber;
     }
@@ -74,6 +80,10 @@ public abstract class Vehicle {
         this.archived = archived;
     }
 
+    public void setDiscriminator(String discriminator) {
+        this.discriminator = discriminator;
+    }
+
     public double getActualRentalPrice() {
         return basePrice;
     }
@@ -87,6 +97,7 @@ public abstract class Vehicle {
                 ", basePrice=" + basePrice +
                 ", isAvailable=" + isAvailable +
                 ", archived=" + archived +
+                ", discriminator='" + discriminator + '\'' +
                 '}';
     }
 
@@ -95,11 +106,11 @@ public abstract class Vehicle {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Vehicle vehicle = (Vehicle) o;
-        return basePrice == vehicle.basePrice && isAvailable == vehicle.isAvailable && archived == vehicle.archived && Objects.equals(vehicleId, vehicle.vehicleId) && Objects.equals(plateNumber, vehicle.plateNumber) && Objects.equals(brand, vehicle.brand);
+        return basePrice == vehicle.basePrice && isAvailable == vehicle.isAvailable && archived == vehicle.archived && Objects.equals(vehicleId, vehicle.vehicleId) && Objects.equals(plateNumber, vehicle.plateNumber) && Objects.equals(brand, vehicle.brand) && Objects.equals(discriminator, vehicle.discriminator);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vehicleId, plateNumber, brand, basePrice, isAvailable, archived);
+        return Objects.hash(vehicleId, plateNumber, brand, basePrice, isAvailable, archived, discriminator);
     }
 }
