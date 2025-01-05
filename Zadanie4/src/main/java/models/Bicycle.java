@@ -13,7 +13,6 @@ public class Bicycle extends Vehicle {
         super(vehicleId, plateNumber, brand, basePrice, "bicycle");
     }
 
-    public Bicycle(String plateNumber, String brand, int basePrice) {
-        this(null, plateNumber, brand, basePrice);
+    public Bicycle() {
     }
 }

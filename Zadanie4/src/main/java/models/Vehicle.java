@@ -9,8 +9,7 @@ import java.util.UUID;
 
 @Entity(defaultKeyspace = "vehicle_rental")
 @CqlName("vehicles")
-public abstract class Vehicle {
-
+public class Vehicle {
     @PartitionKey
     @CqlName("vehicle_id")
     private UUID vehicleId;
@@ -30,6 +29,9 @@ public abstract class Vehicle {
         this.isAvailable = true;
         this.archived = false;
         this.discriminator = discriminator;
+    }
+
+    public Vehicle() {
     }
 
     public UUID getVehicleId() {

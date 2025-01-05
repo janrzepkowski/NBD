@@ -15,17 +15,13 @@ public class Client implements Serializable {
 
     @PartitionKey
     @CqlName("clientId")
-    private final UUID clientId;
+    private UUID clientId;
 
     private String firstName;
     private String lastName;
     private String phoneNumber;
     private int rents;
     private boolean archived;
-
-    public Client(String firstName, String lastName, String phoneNumber) {
-        this(UUID.randomUUID(), firstName, lastName, phoneNumber);
-    }
 
     public Client(UUID uuid, String firstName, String lastName, String phoneNumber) {
         this.clientId = uuid;
@@ -34,6 +30,9 @@ public class Client implements Serializable {
         this.phoneNumber = phoneNumber;
         this.rents = 0;
         this.archived = false;
+    }
+
+    public Client() {
     }
 
     public UUID getClientId() {

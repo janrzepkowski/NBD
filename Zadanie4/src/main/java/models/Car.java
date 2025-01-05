@@ -9,8 +9,8 @@ import java.util.UUID;
 @CqlName("vehicles")
 public class Car extends Vehicle {
 
-    private final char segment;
-    private final double engineCapacity;
+    private char segment;
+    private double engineCapacity;
 
     public Car(UUID vehicleId, String plateNumber, String brand, int basePrice, char segment, double engineCapacity) {
         super(vehicleId, plateNumber, brand, basePrice, "car");
@@ -18,8 +18,7 @@ public class Car extends Vehicle {
         this.engineCapacity = engineCapacity;
     }
 
-    public Car(String plateNumber, String brand, int basePrice, char segment, double engineCapacity) {
-        this(null, plateNumber, brand, basePrice, segment, engineCapacity);
+    public Car(){
     }
 
     public char getSegment() {
