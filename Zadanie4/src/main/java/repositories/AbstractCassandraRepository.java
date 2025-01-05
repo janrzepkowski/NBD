@@ -1,4 +1,4 @@
-package pl.nbd.repository;
+package repositories;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;

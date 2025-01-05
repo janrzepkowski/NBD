@@ -40,7 +40,7 @@ public class VehicleManager implements Serializable {
         }
     }
 
-    public void updateVehicleInformation(Vehicle vehicle) {
+    public void updateVehicle(Vehicle vehicle) {
         if (vehicleExists(vehicle.getVehicleId())) {
             vehicleRepository.update(vehicle);
         }
