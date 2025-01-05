@@ -10,17 +10,16 @@ import mappers.VehicleMapper;
 import mappers.VehicleMapperBuilder;
 import models.Vehicle;
 
-import java.util.UUID;
-
 public class VehicleRepository {
 
     private final CqlSession session;
+    private final VehicleMapper vehicleMapper;
     private final VehicleDao vehicleDao;
 
     public VehicleRepository(CqlSession session) {
         this.session = session;
         makeTable();
-        VehicleMapper vehicleMapper = new VehicleMapperBuilder(session).build();
+        this.vehicleMapper = new VehicleMapperBuilder(session).build();
         this.vehicleDao = vehicleMapper.vehicleDao();
     }
 
@@ -28,15 +27,11 @@ public class VehicleRepository {
         SimpleStatement createVehicles =
                 SchemaBuilder.createTable(CqlIdentifier.fromCql("vehicles"))
                         .ifNotExists()
-                        .withPartitionKey(CqlIdentifier.fromCql("vehicle_id"), DataTypes.UUID)
-                        .withColumn("plate_number", DataTypes.TEXT)
-                        .withColumn("brand", DataTypes.TEXT)
+                        .withPartitionKey(CqlIdentifier.fromCql("vehicle_id"), DataTypes.BIGINT)
                         .withColumn("base_price", DataTypes.INT)
-                        .withColumn("is_available", DataTypes.BOOLEAN)
-                        .withColumn("archived", DataTypes.BOOLEAN)
+                        .withColumn("available", DataTypes.INT)
                         .withColumn("discriminator", DataTypes.TEXT)
-                        .withColumn("segment", DataTypes.TEXT)
-                        .withColumn("engine_capacity", DataTypes.DOUBLE)
+                        .withColumn("engine_capacity", DataTypes.INT) // For Car
                         .build();
         session.execute(createVehicles);
     }
@@ -45,7 +40,7 @@ public class VehicleRepository {
         vehicleDao.create(vehicle);
     }
 
-    public Vehicle read(UUID vehicleId) {
+    public Vehicle read(long vehicleId) {
         return vehicleDao.findById(vehicleId);
     }
 
@@ -53,7 +48,7 @@ public class VehicleRepository {
         vehicleDao.update(vehicle);
     }
 
-    public void delete(UUID vehicleId) {
+    public void delete(long vehicleId) {
         vehicleDao.remove(vehicleId);
     }
 }

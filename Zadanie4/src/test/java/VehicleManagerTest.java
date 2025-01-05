@@ -2,14 +2,13 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import com.datastax.oss.driver.api.querybuilder.truncate.Truncate;
 import managers.VehicleManager;
-import models.*;
+import models.Bicycle;
+import models.Car;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import repositories.AbstractCassandraRepository;
 import repositories.VehicleRepository;
-
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,56 +42,51 @@ class VehicleManagerTest {
     }
 
     @Test
-    void testRegisterBicycle() {
-        Bicycle bicycle = new Bicycle(UUID.randomUUID(), "BIKE123", "Giant", 50);
-        vehicleManager.registerVehicle(bicycle);
+    void testRegisterVehicle() {
+        Car car = new Car(3, 200, "car", 2);
+        vehicleManager.registerVehicle(3, 200, 2);
 
-        Vehicle registeredVehicle = vehicleRepository.read(bicycle.getVehicleId());
-        assertEquals(bicycle, registeredVehicle);
+        Car registeredCar = (Car) vehicleRepository.read(3);
+        assertEquals(car, registeredCar);
     }
 
     @Test
     void testRegisterVehicleWithExistingId() {
-        Car car = new Car(UUID.randomUUID(), "ABC123", "Toyota", 100, 'B', 1.8);
+        Car car = new Car(4, 150, "car", 2);
         vehicleRepository.create(car);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            vehicleManager.registerVehicle(car);
+            vehicleManager.registerVehicle(4, 150, 2);
         });
 
         assertEquals("Vehicle with the same ID already exists.", exception.getMessage());
     }
 
     @Test
-    void testUnregisterVehicle() {
-        Car car = new Car(UUID.randomUUID(), "XYZ789", "Honda", 150, 'C', 2.0);
-        vehicleRepository.create(car);
-
-        vehicleManager.unregisterVehicle(car);
-
-        Vehicle unregisteredVehicle = vehicleRepository.read(car.getVehicleId());
-        assertTrue(unregisteredVehicle.isArchived());
-    }
-
-    @Test
     void testDeleteVehicle() {
-        Car car = new Car(UUID.randomUUID(), "XYZ789", "Honda", 150, 'C', 2.0);
-        vehicleManager.registerVehicle(car);
+        vehicleManager.registerVehicle(1, 100, 2);
+        Car car = (Car) vehicleManager.getVehicle(1);
+        assertNotNull(car);
 
-        vehicleManager.deleteVehicle(car.getVehicleId());
-        Vehicle deletedVehicle = vehicleRepository.read(car.getVehicleId());
-        assertNull(deletedVehicle);
+        vehicleManager.deleteVehicle(1);
+        Car deletedCar = (Car) vehicleManager.getVehicle(1);
+        assertNull(deletedCar);
     }
 
     @Test
     void testUpdateVehicle() {
-        Car car = new Car(UUID.randomUUID(), "XYZ789", "Honda", 150, 'C', 2.0);
-        vehicleManager.registerVehicle(car);
+        vehicleManager.registerVehicle(1, 100, 2);
+        vehicleManager.registerVehicle(2, 150);
+        Car car = (Car) vehicleManager.getVehicle(1);
+        Bicycle bicycle = (Bicycle) vehicleManager.getVehicle(2);
+        assertEquals(100, car.getBasePrice());
+        assertEquals(150, bicycle.getBasePrice());
 
-        car.setBasePrice(200);
-        vehicleManager.updateVehicle(car);
-
-        Vehicle updatedVehicle = vehicleRepository.read(car.getVehicleId());
-        assertEquals(200, updatedVehicle.getBasePrice());
+        vehicleManager.updateVehicleInformation(1, 200, 3);
+        vehicleManager.updateVehicleInformation(2, 250);
+        Car updatedCar = (Car) vehicleManager.getVehicle(1);
+        Bicycle updatedBicycle = (Bicycle) vehicleManager.getVehicle(2);
+        assertEquals(200, updatedCar.getBasePrice());
+        assertEquals(250, updatedBicycle.getBasePrice());
     }
 }

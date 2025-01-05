@@ -21,10 +21,10 @@ public class AbstractCassandraRepository {
                 .addContactPoint(new InetSocketAddress("cassandra2", 9043))
                 .withLocalDatacenter("dc1")
                 .withAuthCredentials("cassandra", "cassandrapassword")
-//                .withKeyspace(CqlIdentifier.fromCql("vehicle_rental")) //comment if 1st run
+                .withKeyspace(CqlIdentifier.fromCql("rent_a_vehicle"))
                 .build();
 
-        CreateKeyspace keyspace = SchemaBuilder.createKeyspace(CqlIdentifier.fromCql("vehicle_rental"))
+        CreateKeyspace keyspace = SchemaBuilder.createKeyspace(CqlIdentifier.fromCql("rent_a_vehicle"))
                 .ifNotExists()
                 .withSimpleStrategy(2)
                 .withDurableWrites(true);

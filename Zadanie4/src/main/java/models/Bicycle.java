@@ -3,16 +3,18 @@ package models;
 import com.datastax.oss.driver.api.mapper.annotations.CqlName;
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
 
-import java.util.UUID;
-
-@Entity(defaultKeyspace = "vehicle_rental")
+@Entity(defaultKeyspace = "rent_a_vehicle")
 @CqlName("vehicles")
 public class Bicycle extends Vehicle {
 
-    public Bicycle(UUID vehicleId, String plateNumber, String brand, int basePrice) {
-        super(vehicleId, plateNumber, brand, basePrice, "bicycle");
+    public Bicycle(long vehicleId, int basePrice) {
+        super(vehicleId, basePrice, "bicycle");
     }
 
-    public Bicycle() {
+    public Bicycle() {}
+
+    @Override
+    public double getActualRentalPrice() {
+        return super.getBasePrice();
     }
 }
