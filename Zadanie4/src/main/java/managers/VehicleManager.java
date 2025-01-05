@@ -24,19 +24,19 @@ public class VehicleManager {
         return vehicleRepository.read(vehicleId);
     }
 
-    public void registerVehicle(long vehicleId, int basePrice, int engineCapacity) {
+    public void registerVehicle(long vehicleId, int basePrice, String brand, int engineCapacity) {
         if (vehicleExists(vehicleId)) {
             throw new IllegalArgumentException("Vehicle with the same ID already exists.");
         }
-        Vehicle vehicle = new Car(vehicleId, basePrice, "car", engineCapacity);
+        Vehicle vehicle = new Car(vehicleId, basePrice, "car", brand, engineCapacity);
         vehicleRepository.create(vehicle);
     }
 
-    public void registerVehicle(long vehicleId, int basePrice) {
+    public void registerVehicle(long vehicleId, int basePrice, String brand) {
         if (vehicleExists(vehicleId)) {
             throw new IllegalArgumentException("Vehicle with the same ID already exists.");
         }
-        Vehicle vehicle = new Bicycle(vehicleId, basePrice);
+        Vehicle vehicle = new Bicycle(vehicleId, basePrice, brand);
         vehicleRepository.create(vehicle);
     }
 
@@ -46,16 +46,16 @@ public class VehicleManager {
         }
     }
 
-    public void updateVehicleInformation(long vehicleId, int basePrice, int engineCapacity) {
+    public void updateVehicle(long vehicleId, int basePrice, String brand, int engineCapacity) {
         if (vehicleExists(vehicleId)) {
-            Vehicle vehicle = new Car(vehicleId, basePrice, "car", engineCapacity);
+            Vehicle vehicle = new Car(vehicleId, basePrice, "car", brand, engineCapacity);
             vehicleRepository.update(vehicle);
         }
     }
 
-    public void updateVehicleInformation(long vehicleId, int basePrice) {
+    public void updateVehicle(long vehicleId, int basePrice, String brand) {
         if (vehicleExists(vehicleId)) {
-            Vehicle vehicle = new Bicycle(vehicleId, basePrice);
+            Vehicle vehicle = new Bicycle(vehicleId, basePrice, brand);
             vehicleRepository.update(vehicle);
         }
     }

@@ -18,10 +18,11 @@ public class Vehicle {
     private int basePrice;
     private int available = 1;
 
-    public Vehicle(long vehicleId, int basePrice, String discriminator) {
+    public Vehicle(long vehicleId, int basePrice, String discriminator, String brand) {
         this.vehicleId = vehicleId;
         this.basePrice = basePrice;
         this.discriminator = discriminator;
+        this.brand = brand;
     }
 
     public Vehicle() {}
@@ -42,6 +43,10 @@ public class Vehicle {
         return discriminator;
     }
 
+    public String getBrand() {
+        return brand;
+    }
+
     public void setVehicleId(long vehicleId) {
         this.vehicleId = vehicleId;
     }
@@ -54,12 +59,16 @@ public class Vehicle {
         this.available = available;
     }
 
-    public double getActualRentalPrice() {
-        return basePrice;
-    }
-
     public void setDiscriminator(String discriminator) {
         this.discriminator = discriminator;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public double getActualRentalPrice() {
+        return basePrice;
     }
 
     @Override

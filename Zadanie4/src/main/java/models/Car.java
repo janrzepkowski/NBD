@@ -10,8 +10,8 @@ public class Car extends Vehicle {
     @CqlName("engine_capacity")
     private int engineCapacity;
 
-    public Car(long vehicleId, int basePrice, String discriminator, int engineCapacity) {
-        super(vehicleId, basePrice, discriminator);
+    public Car(long vehicleId, int basePrice, String discriminator, String brand, int engineCapacity) {
+        super(vehicleId, basePrice, discriminator, brand);
         this.engineCapacity = engineCapacity;
     }
 

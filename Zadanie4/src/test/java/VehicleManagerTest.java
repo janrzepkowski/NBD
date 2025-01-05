@@ -43,8 +43,8 @@ class VehicleManagerTest {
 
     @Test
     void testRegisterVehicle() {
-        Car car = new Car(3, 200, "car", 2);
-        vehicleManager.registerVehicle(3, 200, 2);
+        Car car = new Car(3, 200, "car", "Toyota", 2);
+        vehicleManager.registerVehicle(3, 200, "Toyota", 2);
 
         Car registeredCar = (Car) vehicleRepository.read(3);
         assertEquals(car, registeredCar);
@@ -52,11 +52,11 @@ class VehicleManagerTest {
 
     @Test
     void testRegisterVehicleWithExistingId() {
-        Car car = new Car(4, 150, "car", 2);
+        Car car = new Car(4, 150, "car", "Honda", 2);
         vehicleRepository.create(car);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            vehicleManager.registerVehicle(4, 150, 2);
+            vehicleManager.registerVehicle(4, 150, "Honda", 2);
         });
 
         assertEquals("Vehicle with the same ID already exists.", exception.getMessage());
@@ -64,7 +64,7 @@ class VehicleManagerTest {
 
     @Test
     void testDeleteVehicle() {
-        vehicleManager.registerVehicle(1, 100, 2);
+        vehicleManager.registerVehicle(1, 100, "Ford", 2);
         Car car = (Car) vehicleManager.getVehicle(1);
         assertNotNull(car);
 
@@ -75,15 +75,15 @@ class VehicleManagerTest {
 
     @Test
     void testUpdateVehicle() {
-        vehicleManager.registerVehicle(1, 100, 2);
-        vehicleManager.registerVehicle(2, 150);
+        vehicleManager.registerVehicle(1, 100, "Ford", 2);
+        vehicleManager.registerVehicle(2, 150, "Giant");
         Car car = (Car) vehicleManager.getVehicle(1);
         Bicycle bicycle = (Bicycle) vehicleManager.getVehicle(2);
         assertEquals(100, car.getBasePrice());
         assertEquals(150, bicycle.getBasePrice());
 
-        vehicleManager.updateVehicleInformation(1, 200, 3);
-        vehicleManager.updateVehicleInformation(2, 250);
+        vehicleManager.updateVehicle(1, 200, "Ford", 3);
+        vehicleManager.updateVehicle(2, 250, "Giant");
         Car updatedCar = (Car) vehicleManager.getVehicle(1);
         Bicycle updatedBicycle = (Bicycle) vehicleManager.getVehicle(2);
         assertEquals(200, updatedCar.getBasePrice());

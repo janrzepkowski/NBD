@@ -31,6 +31,7 @@ public class VehicleRepository {
                         .withColumn("base_price", DataTypes.INT)
                         .withColumn("available", DataTypes.INT)
                         .withColumn("discriminator", DataTypes.TEXT)
+                        .withColumn("brand", DataTypes.TEXT)
                         .withColumn("engine_capacity", DataTypes.INT) // For Car
                         .build();
         session.execute(createVehicles);

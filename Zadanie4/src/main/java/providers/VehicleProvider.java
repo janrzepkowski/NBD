@@ -35,6 +35,7 @@ public class VehicleProvider {
                                 .setInt("base_price", car.getBasePrice())
                                 .setInt("engine_capacity", car.getEngineCapacity())
                                 .setString("discriminator", "car")
+                                .setString("brand", car.getBrand())
                                 .setInt("available", car.getAvailable());
                     }
                     case "bicycle" -> {
@@ -44,6 +45,7 @@ public class VehicleProvider {
                                 .setLong("vehicle_id", bicycle.getVehicleId())
                                 .setInt("base_price", bicycle.getBasePrice())
                                 .setString("discriminator", "bicycle")
+                                .setString("brand", bicycle.getBrand())
                                 .setInt("available", bicycle.getAvailable());
                     }
                     default -> throw new IllegalArgumentException();
@@ -73,6 +75,7 @@ public class VehicleProvider {
                 row.getLong("vehicle_id"),
                 row.getInt("base_price"),
                 row.getString("discriminator"),
+                row.getString("brand"),
                 row.getInt("engine_capacity")
         );
     }
@@ -80,7 +83,8 @@ public class VehicleProvider {
     private Bicycle getBicycle(Row row) {
         return new Bicycle(
                 row.getLong("vehicle_id"),
-                row.getInt("base_price")
+                row.getInt("base_price"),
+                row.getString("brand")
         );
     }
 
@@ -95,6 +99,7 @@ public class VehicleProvider {
                                     .setInt("base_price", car.getBasePrice())
                                     .setInt("engine_capacity", car.getEngineCapacity())
                                     .setInt("available", car.getAvailable())
+                                    .setString("brand", car.getBrand())
                                     .setLong("vehicle_id", car.getVehicleId());
                         }
                         case "bicycle" -> {
@@ -103,6 +108,7 @@ public class VehicleProvider {
                                     .bind()
                                     .setInt("base_price", bicycle.getBasePrice())
                                     .setInt("available", bicycle.getAvailable())
+                                    .setString("brand", bicycle.getBrand())
                                     .setLong("vehicle_id", bicycle.getVehicleId());
                         }
                         default -> throw new IllegalArgumentException();
