@@ -3,18 +3,19 @@ package models;
 import com.datastax.oss.driver.api.mapper.annotations.CqlName;
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
 import com.datastax.oss.driver.api.mapper.annotations.PartitionKey;
+import com.datastax.oss.driver.api.mapper.annotations.PropertyStrategy;
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
-@Entity(defaultKeyspace = "client")
+@Entity(defaultKeyspace = "rent_a_vehicle")
 @CqlName("clients")
-public class Client implements Serializable {
+public class Client{
 
     @PartitionKey
-    @CqlName("clientId")
-    private UUID clientId;
+    @CqlName("client_id")
+    private long clientId;
 
     private String firstName;
     private String lastName;
@@ -22,8 +23,8 @@ public class Client implements Serializable {
     private int rents;
     private boolean archived;
 
-    public Client(UUID uuid, String firstName, String lastName, String phoneNumber) {
-        this.clientId = uuid;
+    public Client(long clientId, String firstName, String lastName, String phoneNumber) {
+        this.clientId = clientId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -31,10 +32,9 @@ public class Client implements Serializable {
         this.archived = false;
     }
 
-    public Client() {
-    }
+    public Client() {}
 
-    public UUID getClientId() {
+    public long getClientId() {
         return clientId;
     }
 
