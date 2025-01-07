@@ -3,15 +3,12 @@ package models;
 import com.datastax.oss.driver.api.mapper.annotations.CqlName;
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
 import com.datastax.oss.driver.api.mapper.annotations.PartitionKey;
-import com.datastax.oss.driver.api.mapper.annotations.PropertyStrategy;
 
-import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity(defaultKeyspace = "rent_a_vehicle")
 @CqlName("clients")
-public class Client{
+public class Client {
 
     @PartitionKey
     @CqlName("client_id")
@@ -20,16 +17,13 @@ public class Client{
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private int rents;
-    private boolean archived;
+    private int rents = 0;
 
     public Client(long clientId, String firstName, String lastName, String phoneNumber) {
         this.clientId = clientId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
-        this.rents = 0;
-        this.archived = false;
     }
 
     public Client() {}
@@ -62,14 +56,6 @@ public class Client{
         this.phoneNumber = phoneNumber;
     }
 
-    public boolean isArchived() {
-        return archived;
-    }
-
-    public void setArchived(boolean archived) {
-        this.archived = archived;
-    }
-
     public int getRents() {
         return rents;
     }
@@ -79,27 +65,18 @@ public class Client{
     }
 
     @Override
-    public String toString() {
-        return "Client{" +
-                "clientId=" + clientId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", rents=" + rents +
-                ", archived=" + archived +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Client client = (Client) o;
-        return archived == client.archived && Objects.equals(clientId, client.clientId) && Objects.equals(firstName, client.firstName) && Objects.equals(lastName, client.lastName) && Objects.equals(phoneNumber, client.phoneNumber);
+        return clientId == client.clientId && rents == client.rents &&
+                Objects.equals(firstName, client.firstName) &&
+                Objects.equals(lastName, client.lastName) &&
+                Objects.equals(phoneNumber, client.phoneNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(clientId, firstName, lastName, phoneNumber, archived);
+        return Objects.hash(clientId, firstName, lastName, phoneNumber, rents);
     }
 }

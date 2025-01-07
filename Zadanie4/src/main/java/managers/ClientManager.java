@@ -3,11 +3,8 @@ package managers;
 import models.Client;
 import repositories.ClientRepository;
 
-import java.io.Serializable;
-
 public class ClientManager {
-
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
 
     public ClientManager(ClientRepository clientRepository) {
         if (clientRepository == null) {
@@ -20,30 +17,28 @@ public class ClientManager {
         return clientRepository.read(clientId) != null;
     }
 
-    public void registerClient(Client client) {
-        if (clientExists(client.getClientId())) {
+    public Client getClient(long clientId) {
+        return this.clientRepository.read(clientId);
+    }
+
+    public void registerClient(long clientId, String firstName, String lastName, String phoneNumber) {
+        if (clientExists(clientId)) {
             throw new IllegalArgumentException("Client with the same ID already exists.");
         }
-        clientRepository.create(client);
+        Client newClient = new Client(clientId, firstName, lastName, phoneNumber);
+        clientRepository.create(newClient);
     }
 
-    public void archiveClient(long clientId) {
-        Client client = clientRepository.read(clientId);
-        if (client == null) {
-            throw new IllegalArgumentException("Client does not exist.");
+    public void deleteClient(long clientId) {
+        if (clientExists(clientId)) {
+            clientRepository.delete(clientId);
         }
-        client.setArchived(true);
-        clientRepository.update(client);
     }
 
-    public Client getClient(long clientId) {
-        return clientRepository.read(clientId);
-    }
-
-    public void updateClient(Client client) {
-        if (!clientExists(client.getClientId())) {
-            throw new IllegalArgumentException("Cannot update a non-existing client.");
+    public void updateClient(long clientId, String firstName, String lastName, String phoneNumber) {
+        if (clientExists(clientId)) {
+            Client client = new Client(clientId, firstName, lastName, phoneNumber);
+            clientRepository.update(client);
         }
-        clientRepository.update(client);
     }
 }
