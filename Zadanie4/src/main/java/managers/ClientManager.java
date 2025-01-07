@@ -21,11 +21,11 @@ public class ClientManager {
         return this.clientRepository.read(clientId);
     }
 
-    public void registerClient(long clientId, String firstName, String lastName, String phoneNumber) {
+    public void registerClient(long clientId, String firstName, String lastName, String phoneNumber, boolean archived) {
         if (clientExists(clientId)) {
             throw new IllegalArgumentException("Client with the same ID already exists.");
         }
-        Client newClient = new Client(clientId, firstName, lastName, phoneNumber);
+        Client newClient = new Client(clientId, firstName, lastName, phoneNumber, archived);
         clientRepository.create(newClient);
     }
 
@@ -35,9 +35,17 @@ public class ClientManager {
         }
     }
 
-    public void updateClient(long clientId, String firstName, String lastName, String phoneNumber) {
+    public void updateClient(long clientId, String firstName, String lastName, String phoneNumber, boolean archived) {
         if (clientExists(clientId)) {
-            Client client = new Client(clientId, firstName, lastName, phoneNumber);
+            Client client = new Client(clientId, firstName, lastName, phoneNumber, archived);
+            clientRepository.update(client);
+        }
+    }
+
+    public void unregisterClient(int personalID) {
+        Client client = clientRepository.read(personalID);
+        if (client != null) {
+            client.setArchived(true);
             clientRepository.update(client);
         }
     }

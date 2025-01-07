@@ -40,8 +40,8 @@ class ClientManagerTest {
 
     @Test
     void testRegisterClient() {
-        Client client = new Client(1, "John", "Doe", "123456789");
-        clientManager.registerClient(1, "John", "Doe", "123456789");
+        Client client = new Client(1, "John", "Doe", "123456789", false);
+        clientManager.registerClient(1, "John", "Doe", "123456789", false);
 
         Client registeredClient = clientRepository.read(1);
         assertEquals(client, registeredClient);
@@ -49,22 +49,22 @@ class ClientManagerTest {
 
     @Test
     void testRegisterClientWithExistingId() {
-        Client client = new Client(2, "Jane", "Smith", "987654321");
+        Client client = new Client(2, "Jane", "Smith", "987654321", false);
         clientRepository.create(client);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> clientManager.registerClient(2, "Jane", "Smith", "987654321"));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> clientManager.registerClient(2, "Jane", "Smith", "987654321", false));
 
         assertEquals("Client with the same ID already exists.", exception.getMessage());
     }
 
     @Test
     void testUpdateClient() {
-        clientManager.registerClient(4, "Bob", "Brown", "444444444");
+        clientManager.registerClient(4, "Bob", "Brown", "444444444", false);
         Client client = clientManager.getClient(4);
         assertEquals("Bob", client.getFirstName());
         assertEquals("Brown", client.getLastName());
 
-        clientManager.updateClient(4, "Robert", "Brownson", "444444444");
+        clientManager.updateClient(4, "Robert", "Brownson", "444444444", false);
         Client updatedClient = clientManager.getClient(4);
         assertEquals("Robert", updatedClient.getFirstName());
         assertEquals("Brownson", updatedClient.getLastName());
@@ -72,12 +72,25 @@ class ClientManagerTest {
 
     @Test
     void testDeleteClient() {
-        clientManager.registerClient(6, "David", "Black", "222222222");
+        clientManager.registerClient(6, "David", "Black", "222222222", false);
         Client client = clientManager.getClient(6);
         assertNotNull(client);
 
         clientManager.deleteClient(6);
         Client deletedClient = clientManager.getClient(6);
         assertNull(deletedClient);
+    }
+
+    @Test
+    void testUnregisterClient() {
+        clientManager.registerClient(7, "Alice", "White", "333333333", false);
+        Client client = clientManager.getClient(7);
+        assertNotNull(client);
+        assertFalse(client.isArchived());
+
+        clientManager.unregisterClient(7);
+        Client unregisteredClient = clientManager.getClient(7);
+        assertNotNull(unregisteredClient);
+        assertTrue(unregisteredClient.isArchived());
     }
 }

@@ -18,12 +18,14 @@ public class Client {
     private String lastName;
     private String phoneNumber;
     private int rents = 0;
+    private boolean archived = false;
 
-    public Client(long clientId, String firstName, String lastName, String phoneNumber) {
+    public Client(long clientId, String firstName, String lastName, String phoneNumber, boolean archived) {
         this.clientId = clientId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
+        this.archived = archived;
     }
 
     public Client() {}
@@ -64,12 +66,20 @@ public class Client {
         this.rents = rents;
     }
 
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Client client = (Client) o;
-        return clientId == client.clientId && rents == client.rents &&
+        return clientId == client.clientId && rents == client.rents && archived == client.archived &&
                 Objects.equals(firstName, client.firstName) &&
                 Objects.equals(lastName, client.lastName) &&
                 Objects.equals(phoneNumber, client.phoneNumber);
@@ -77,6 +87,6 @@ public class Client {
 
     @Override
     public int hashCode() {
-        return Objects.hash(clientId, firstName, lastName, phoneNumber, rents);
+        return Objects.hash(clientId, firstName, lastName, phoneNumber, rents, archived);
     }
 }

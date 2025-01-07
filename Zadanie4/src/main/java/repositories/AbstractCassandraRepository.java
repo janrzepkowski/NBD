@@ -21,7 +21,7 @@ public class AbstractCassandraRepository {
                 .addContactPoint(new InetSocketAddress("cassandra2", 9043))
                 .withLocalDatacenter("dc1")
                 .withAuthCredentials("cassandra", "cassandrapassword")
-                .withKeyspace(CqlIdentifier.fromCql("rent_a_vehicle"))
+                .withKeyspace(CqlIdentifier.fromCql("rent_a_vehicle")) // zakomentowac przy pierwszym uruchomieniu
                 .build();
 
         CreateKeyspace keyspace = SchemaBuilder.createKeyspace(CqlIdentifier.fromCql("rent_a_vehicle"))

@@ -22,6 +22,7 @@ public class ClientProvider {
     public static final CqlIdentifier LAST_NAME = CqlIdentifier.fromCql("last_name");
     public static final CqlIdentifier PHONE_NUMBER = CqlIdentifier.fromCql("phone_number");
     public static final CqlIdentifier RENTS = CqlIdentifier.fromCql("rents");
+    public static final CqlIdentifier ARCHIVED = CqlIdentifier.fromCql("archived");
 
     public ClientProvider(MapperContext ctx) {
         this.session = ctx.getSession();
@@ -34,6 +35,7 @@ public class ClientProvider {
                 .value(LAST_NAME, QueryBuilder.literal(client.getLastName()))
                 .value(PHONE_NUMBER, QueryBuilder.literal(client.getPhoneNumber()))
                 .value(RENTS, QueryBuilder.literal(client.getRents()))
+                .value(ARCHIVED, QueryBuilder.literal(client.isArchived()))
                 .ifNotExists();
 
         session.execute(insertClient.build());
@@ -54,7 +56,8 @@ public class ClientProvider {
                 row.getLong(CLIENT_ID),
                 row.getString(FIRST_NAME),
                 row.getString(LAST_NAME),
-                row.getString(PHONE_NUMBER)
+                row.getString(PHONE_NUMBER),
+                row.getBoolean(ARCHIVED)
         );
     }
 
@@ -64,6 +67,7 @@ public class ClientProvider {
                 .setColumn(LAST_NAME, QueryBuilder.literal(client.getLastName()))
                 .setColumn(PHONE_NUMBER, QueryBuilder.literal(client.getPhoneNumber()))
                 .setColumn(RENTS, QueryBuilder.literal(client.getRents()))
+                .setColumn(ARCHIVED, QueryBuilder.literal(client.isArchived()))
                 .where(Relation.column(CLIENT_ID).isEqualTo(QueryBuilder.literal(client.getClientId())));
 
         session.execute(updateClient.build());

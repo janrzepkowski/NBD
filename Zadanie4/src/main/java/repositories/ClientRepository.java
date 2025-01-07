@@ -32,6 +32,7 @@ public class ClientRepository {
                         .withColumn("last_name", DataTypes.TEXT)
                         .withColumn("phone_number", DataTypes.TEXT)
                         .withColumn("rents", DataTypes.INT)
+                        .withColumn("archived", DataTypes.BOOLEAN)
                         .build();
         session.execute(createClients);
     }
