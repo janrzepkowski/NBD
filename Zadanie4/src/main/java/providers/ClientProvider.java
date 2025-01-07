@@ -11,8 +11,6 @@ import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.select.Select;
 import models.Client;
 
-import java.util.UUID;
-
 public class ClientProvider {
     private final CqlSession session;
     private final EntityHelper<Client> clientHelper;
@@ -26,7 +24,7 @@ public class ClientProvider {
         session.execute(
                 session.prepare(clientHelper.insert().build())
                         .bind()
-                        .setUuid("client_id", client.getClientId())
+                        .setLong("client_id", client.getClientId())
                         .setString("first_name", client.getFirstName())
                         .setString("last_name", client.getLastName())
                         .setString("phone_number", client.getPhoneNumber())
@@ -35,7 +33,7 @@ public class ClientProvider {
         );
     }
 
-    public Client findById(UUID clientId) {
+    public Client findById(long clientId) {
         Select selectClient = QueryBuilder.selectFrom(CqlIdentifier.fromCql("clients"))
                 .all()
                 .where(Relation.column(CqlIdentifier.fromCql("client_id")).isEqualTo(QueryBuilder.literal(clientId)));
@@ -44,15 +42,19 @@ public class ClientProvider {
             if (row == null) {
                 return null;
             }
-            return new Client(
-                    row.getUuid("client_id"),
-                    row.getString("first_name"),
-                    row.getString("last_name"),
-                    row.getString("phone_number")
-            );
+            return getClient(row);
         } catch (NullPointerException e) {
             return null;
         }
+    }
+
+    private Client getClient(Row row) {
+        return new Client(
+                row.getLong("client_id"),
+                row.getString("first_name"),
+                row.getString("last_name"),
+                row.getString("phone_number")
+        );
     }
 
     public void update(Client client) {
@@ -60,7 +62,7 @@ public class ClientProvider {
             session.execute(
                     session.prepare(clientHelper.updateByPrimaryKey().build())
                             .bind()
-                            .setUuid("client_id", client.getClientId())
+                            .setLong("client_id", client.getClientId())
                             .setString("first_name", client.getFirstName())
                             .setString("last_name", client.getLastName())
                             .setString("phone_number", client.getPhoneNumber())
@@ -72,7 +74,7 @@ public class ClientProvider {
         }
     }
 
-    public void remove(UUID clientId) {
+    public void remove(long clientId) {
         Delete deleteClient = QueryBuilder.deleteFrom(CqlIdentifier.fromCql("clients"))
                 .where(Relation.column(CqlIdentifier.fromCql("client_id")).isEqualTo(QueryBuilder.literal(clientId)));
         session.execute(deleteClient.build());
