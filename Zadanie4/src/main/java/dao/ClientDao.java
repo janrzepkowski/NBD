@@ -1,8 +1,6 @@
 package dao;
 
-import com.datastax.oss.driver.api.mapper.annotations.Dao;
-import com.datastax.oss.driver.api.mapper.annotations.QueryProvider;
-import com.datastax.oss.driver.api.mapper.annotations.StatementAttributes;
+import com.datastax.oss.driver.api.mapper.annotations.*;
 import models.Client;
 import providers.ClientProvider;
 

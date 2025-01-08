@@ -29,7 +29,7 @@ public class VehicleRepository {
                         .ifNotExists()
                         .withPartitionKey(CqlIdentifier.fromCql("vehicle_id"), DataTypes.BIGINT)
                         .withColumn("base_price", DataTypes.INT)
-                        .withColumn("available", DataTypes.INT)
+                        .withColumn("available", DataTypes.BOOLEAN)
                         .withColumn("discriminator", DataTypes.TEXT)
                         .withColumn("brand", DataTypes.TEXT)
                         .withColumn("engine_capacity", DataTypes.INT) // For Car

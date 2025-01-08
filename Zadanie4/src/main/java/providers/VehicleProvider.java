@@ -36,7 +36,7 @@ public class VehicleProvider {
                                 .setInt("engine_capacity", car.getEngineCapacity())
                                 .setString("discriminator", "car")
                                 .setString("brand", car.getBrand())
-                                .setInt("available", car.getAvailable());
+                                .setBoolean("available", car.getAvailable());
                     }
                     case "bicycle" -> {
                         Bicycle bicycle = (Bicycle) vehicle;
@@ -46,7 +46,7 @@ public class VehicleProvider {
                                 .setInt("base_price", bicycle.getBasePrice())
                                 .setString("discriminator", "bicycle")
                                 .setString("brand", bicycle.getBrand())
-                                .setInt("available", bicycle.getAvailable());
+                                .setBoolean("available", bicycle.getAvailable());
                     }
                     default -> throw new IllegalArgumentException();
                 }
@@ -98,7 +98,7 @@ public class VehicleProvider {
                                     .bind()
                                     .setInt("base_price", car.getBasePrice())
                                     .setInt("engine_capacity", car.getEngineCapacity())
-                                    .setInt("available", car.getAvailable())
+                                    .setBoolean("available", car.getAvailable())
                                     .setString("brand", car.getBrand())
                                     .setLong("vehicle_id", car.getVehicleId());
                         }
@@ -107,7 +107,7 @@ public class VehicleProvider {
                             yield session.prepare(bicycleHelper.updateByPrimaryKey().build())
                                     .bind()
                                     .setInt("base_price", bicycle.getBasePrice())
-                                    .setInt("available", bicycle.getAvailable())
+                                    .setBoolean("available", bicycle.getAvailable())
                                     .setString("brand", bicycle.getBrand())
                                     .setLong("vehicle_id", bicycle.getVehicleId());
                         }

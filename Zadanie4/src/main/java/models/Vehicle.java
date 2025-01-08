@@ -16,7 +16,7 @@ public class Vehicle {
     private String discriminator;
     private String brand;
     private int basePrice;
-    private int available = 1;
+    private boolean available = true;
 
     public Vehicle(long vehicleId, int basePrice, String discriminator, String brand) {
         this.vehicleId = vehicleId;
@@ -35,7 +35,7 @@ public class Vehicle {
         return basePrice;
     }
 
-    public int getAvailable() {
+    public boolean getAvailable() {
         return available;
     }
 
@@ -55,7 +55,7 @@ public class Vehicle {
         this.basePrice = basePrice;
     }
 
-    public void setAvailable(int available) {
+    public void setAvailable(boolean available) {
         this.available = available;
     }
 
