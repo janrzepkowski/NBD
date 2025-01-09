@@ -6,10 +6,10 @@ import com.datastax.oss.driver.api.core.cql.BatchStatement;
 import com.datastax.oss.driver.api.core.cql.BatchType;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
-import com.datastax.oss.driver.api.mapper.MapperContext;
-import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import com.datastax.oss.driver.api.querybuilder.delete.Delete;
 import com.datastax.oss.driver.api.querybuilder.insert.Insert;
+import com.datastax.oss.driver.api.mapper.MapperContext;
+import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import com.datastax.oss.driver.api.querybuilder.relation.Relation;
 import com.datastax.oss.driver.api.querybuilder.select.Select;
 import com.datastax.oss.driver.api.querybuilder.update.Update;
@@ -63,12 +63,8 @@ public class RentProvider {
                 .value(ARCHIVED, literal(rent.isArchived()))
                 .ifNotExists();
 
-        BatchStatement batchStatement = BatchStatement.builder(BatchType.LOGGED)
-                .addStatement(insertClient.build())
-                .addStatement(insertVehicle.build())
-                .build();
-
-        session.execute(batchStatement);
+        session.execute(insertClient.build());
+        session.execute(insertVehicle.build());
     }
 
     public List<Rent> findByClientId(long clientId) {
@@ -92,11 +88,11 @@ public class RentProvider {
     }
 
     private List<Rent> convertRowsToRents(List<Row> rows) {
-        List<Rent> rents = new ArrayList<>();
+        ArrayList<Rent> rents = new ArrayList<>();
 
         for (Row row : rows) {
-            LocalDateTime beginTime = row.getInstant(BEGIN_TIME).atZone(ZoneOffset.UTC).toLocalDateTime();
-            LocalDateTime endTime = row.getInstant(END_TIME).atZone(ZoneOffset.UTC).toLocalDateTime();
+            LocalDateTime beginTime = row.isNull(BEGIN_TIME) ? null : LocalDateTime.ofInstant(row.getInstant(BEGIN_TIME), ZoneOffset.UTC);
+            LocalDateTime endTime = row.isNull(END_TIME) ? null : LocalDateTime.ofInstant(row.getInstant(END_TIME), ZoneOffset.UTC);
 
             Rent rent = new Rent(
                     row.getLong(RENT_ID),
