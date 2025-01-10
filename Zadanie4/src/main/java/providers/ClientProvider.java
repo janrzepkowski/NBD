@@ -57,7 +57,8 @@ public class ClientProvider {
                 row.getString(FIRST_NAME),
                 row.getString(LAST_NAME),
                 row.getString(PHONE_NUMBER),
-                row.getBoolean(ARCHIVED)
+                row.getBoolean(ARCHIVED),
+                row.getInt(RENTS)
         );
     }
 
@@ -69,7 +70,6 @@ public class ClientProvider {
                 .setColumn(RENTS, QueryBuilder.literal(client.getRents()))
                 .setColumn(ARCHIVED, QueryBuilder.literal(client.isArchived()))
                 .where(Relation.column(CLIENT_ID).isEqualTo(QueryBuilder.literal(client.getClientId())));
-
         session.execute(updateClient.build());
     }
 

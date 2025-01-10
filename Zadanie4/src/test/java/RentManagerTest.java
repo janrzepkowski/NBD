@@ -8,7 +8,7 @@ import models.Car;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import repositories.AbstractCassandraRepository;
+import repositories.CassandraRepository;
 import repositories.ClientRepository;
 import repositories.RentRepository;
 import repositories.VehicleRepository;
@@ -27,8 +27,8 @@ class RentManagerTest {
 
     @BeforeAll
     static void setUp() {
-        AbstractCassandraRepository abstractCassandraRepository = new AbstractCassandraRepository();
-        session = abstractCassandraRepository.getSession();
+        CassandraRepository cassandraRepository = new CassandraRepository();
+        session = cassandraRepository.getSession();
         vehicleRepository = new VehicleRepository(session);
         rentRepository = new RentRepository(session);
         clientRepository = new ClientRepository(session);
@@ -55,7 +55,7 @@ class RentManagerTest {
 
     @Test
     void testRentVehicle() {
-        Client client = new Client(1, "Jane", "Smith", "987654321", false);
+        Client client = new Client(1, "Jane", "Smith", "987654321", false, 0);
         Car car = new Car(1, 200, "car", "Toyota", 2);
         clientRepository.create(client);
         vehicleRepository.create(car);
@@ -71,7 +71,7 @@ class RentManagerTest {
 
     @Test
     void testRentVehicleClientMaxRents() {
-        Client client = new Client(1, "Jane", "Smith", "987654321", false);
+        Client client = new Client(1, "Jane", "Smith", "987654321", false, 0);
         Car car = new Car(1, 200, "car", "Toyota", 2);
         client.setRents(5);
         clientRepository.create(client);
@@ -86,7 +86,7 @@ class RentManagerTest {
 
     @Test
     void testReturnVehicle() {
-        Client client = new Client(1, "Jane", "Smith", "987654321", false);
+        Client client = new Client(1, "Jane", "Smith", "987654321", false, 0);
         Car car = new Car(1, 200, "car", "Toyota", 2);
         clientRepository.create(client);
         vehicleRepository.create(car);

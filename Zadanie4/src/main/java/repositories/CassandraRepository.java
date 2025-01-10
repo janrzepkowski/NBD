@@ -8,10 +8,10 @@ import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
 
 import java.net.InetSocketAddress;
 
-public class AbstractCassandraRepository {
+public class CassandraRepository {
     private static CqlSession session;
 
-    public AbstractCassandraRepository() {
+    public CassandraRepository() {
         initSession();
     }
 

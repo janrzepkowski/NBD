@@ -7,7 +7,7 @@ import models.Car;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import repositories.AbstractCassandraRepository;
+import repositories.CassandraRepository;
 import repositories.VehicleRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,8 +20,8 @@ class VehicleManagerTest {
 
     @BeforeAll
     static void setUp() {
-        AbstractCassandraRepository abstractCassandraRepository = new AbstractCassandraRepository();
-        session = abstractCassandraRepository.getSession();
+        CassandraRepository cassandraRepository = new CassandraRepository();
+        session = cassandraRepository.getSession();
         vehicleRepository = new VehicleRepository(session);
         vehicleManager = new VehicleManager(vehicleRepository);
     }

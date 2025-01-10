@@ -17,15 +17,16 @@ public class Client {
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private int rents = 0;
+    private int rents;
     private boolean archived = false;
 
-    public Client(long clientId, String firstName, String lastName, String phoneNumber, boolean archived) {
+    public Client(long clientId, String firstName, String lastName, String phoneNumber, boolean archived, int rents) {
         this.clientId = clientId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.archived = archived;
+        this.rents = rents;
     }
 
     public Client() {}

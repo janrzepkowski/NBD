@@ -6,7 +6,7 @@ import models.Client;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import repositories.AbstractCassandraRepository;
+import repositories.CassandraRepository;
 import repositories.ClientRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,8 +19,8 @@ class ClientManagerTest {
 
     @BeforeAll
     static void setUp() {
-        AbstractCassandraRepository abstractCassandraRepository = new AbstractCassandraRepository();
-        session = abstractCassandraRepository.getSession();
+        CassandraRepository cassandraRepository = new CassandraRepository();
+        session = cassandraRepository.getSession();
         clientRepository = new ClientRepository(session);
         clientManager = new ClientManager(clientRepository);
     }
@@ -40,8 +40,8 @@ class ClientManagerTest {
 
     @Test
     void testRegisterClient() {
-        Client client = new Client(1, "John", "Doe", "123456789", false);
-        clientManager.registerClient(1, "John", "Doe", "123456789", false);
+        Client client = new Client(1, "John", "Doe", "123456789", false, 0);
+        clientManager.registerClient(1, "John", "Doe", "123456789", false, 0);
 
         Client registeredClient = clientRepository.read(1);
         assertEquals(client, registeredClient);
@@ -49,22 +49,22 @@ class ClientManagerTest {
 
     @Test
     void testRegisterClientWithExistingId() {
-        Client client = new Client(2, "Jane", "Smith", "987654321", false);
+        Client client = new Client(2, "Jane", "Smith", "987654321", false, 0);
         clientRepository.create(client);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> clientManager.registerClient(2, "Jane", "Smith", "987654321", false));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> clientManager.registerClient(2, "Jane", "Smith", "987654321", false, 0));
 
         assertEquals("Client with the same ID already exists.", exception.getMessage());
     }
 
     @Test
     void testUpdateClient() {
-        clientManager.registerClient(4, "Bob", "Brown", "444444444", false);
+        clientManager.registerClient(4, "Bob", "Brown", "444444444", false, 0);
         Client client = clientManager.getClient(4);
         assertEquals("Bob", client.getFirstName());
         assertEquals("Brown", client.getLastName());
 
-        clientManager.updateClient(4, "Robert", "Brownson", "444444444", false);
+        clientManager.updateClient(4, "Robert", "Brownson", "444444444", false, 0);
         Client updatedClient = clientManager.getClient(4);
         assertEquals("Robert", updatedClient.getFirstName());
         assertEquals("Brownson", updatedClient.getLastName());
@@ -72,7 +72,7 @@ class ClientManagerTest {
 
     @Test
     void testDeleteClient() {
-        clientManager.registerClient(6, "David", "Black", "222222222", false);
+        clientManager.registerClient(6, "David", "Black", "222222222", false, 0);
         Client client = clientManager.getClient(6);
         assertNotNull(client);
 
@@ -83,7 +83,7 @@ class ClientManagerTest {
 
     @Test
     void testUnregisterClient() {
-        clientManager.registerClient(7, "Alice", "White", "333333333", false);
+        clientManager.registerClient(7, "Alice", "White", "333333333", false, 0);
         Client client = clientManager.getClient(7);
         assertNotNull(client);
         assertFalse(client.isArchived());

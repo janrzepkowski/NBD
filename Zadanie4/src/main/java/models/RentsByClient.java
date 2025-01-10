@@ -1,5 +1,6 @@
 package models;
 
+import com.datastax.oss.driver.api.mapper.annotations.ClusteringColumn;
 import com.datastax.oss.driver.api.mapper.annotations.CqlName;
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
 import com.datastax.oss.driver.api.mapper.annotations.PartitionKey;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @CqlName("rents_by_client")
 public class RentsByClient extends Rent {
     @CqlName("rent_id")
+    @ClusteringColumn
     private long rentId;
     @CqlName("client_id")
     @PartitionKey

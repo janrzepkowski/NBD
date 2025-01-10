@@ -62,7 +62,7 @@ public class RentManager {
             if (!vehicle.getAvailable()) {
                 throw new IllegalArgumentException("Vehicle is already rented");
             }
-            if (client.getRents() >= 2) {
+            if (client.getRents() >= 5) {
                 throw new IllegalArgumentException("Client has reached the maximum number of rents: " + client.getRents());
             }
             vehicle.setAvailable(false);
