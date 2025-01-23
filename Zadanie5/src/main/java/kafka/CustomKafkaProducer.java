@@ -1,3 +1,5 @@
+package kafka;
+
 import models.RentMessage;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClientConfig;

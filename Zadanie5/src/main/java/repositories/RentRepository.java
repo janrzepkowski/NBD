@@ -9,6 +9,7 @@ import models.Client;
 import models.Rent;
 import models.Vehicle;
 import org.bson.conversions.Bson;
+import kafka.CustomKafkaProducer;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -80,6 +81,10 @@ public class RentRepository extends AbstractMongoRepository {
             rentCollection.insertOne(clientSession, rent);
 
             clientSession.commitTransaction();
+
+            CustomKafkaProducer kafkaProducer = new CustomKafkaProducer();
+            kafkaProducer.sendRent(rent);
+
         } catch (Exception e) {
             throw new RuntimeException("Booking vehicle failed", e);
         }

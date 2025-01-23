@@ -1,3 +1,4 @@
+import kafka.CustomKafkaProducer;
 import org.junit.jupiter.api.Test;
 import models.*;
 
