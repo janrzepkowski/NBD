@@ -110,7 +110,7 @@ services:
             - KAFKA_CFG_ADVERTISED_LISTENERS=DOCKER_EXTERNAL://kafka1:9192,DOCKER_INTERNAL://kafka1:19192
             - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka1:9193,2@kafka2:9293,3@kafka3:9393
             - KAFKA_ENABLE_KRAFT=yes
-            - KAFKA_KRAFT_CLUSTER_ID=596ff5838f114507a13c2314defa0427
+            - KAFKA_KRAFT_CLUSTER_ID=OJhetZkPy83B01tugYRXwl
             - ALLOW_PLAINTEXT_LISTENER=yes
             - KAFKA_OPTS=-Dlog4j.rootLogger=DEBUG
         volumes:
@@ -140,7 +140,7 @@ services:
             - KAFKA_CFG_ADVERTISED_LISTENERS=DOCKER_EXTERNAL://kafka2:9292,DOCKER_INTERNAL://kafka2:19292
             - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka1:9193,2@kafka2:9293,3@kafka3:9393
             - KAFKA_ENABLE_KRAFT=yes
-            - KAFKA_KRAFT_CLUSTER_ID=596ff5838f114507a13c2314defa0427
+            - KAFKA_KRAFT_CLUSTER_ID=OJhetZkPy83B01tugYRXwl
             - ALLOW_PLAINTEXT_LISTENER=yes
             - KAFKA_OPTS=-Dlog4j.rootLogger=DEBUG
         volumes:
@@ -169,7 +169,7 @@ services:
             - KAFKA_CFG_ADVERTISED_LISTENERS=DOCKER_EXTERNAL://kafka3:9392,DOCKER_INTERNAL://kafka3:19392
             - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka1:9193,2@kafka2:9293,3@kafka3:9393
             - KAFKA_ENABLE_KRAFT=yes
-            - KAFKA_KRAFT_CLUSTER_ID=596ff5838f114507a13c2314defa0427
+            - KAFKA_KRAFT_CLUSTER_ID=OJhetZkPy83B01tugYRXwl
             - ALLOW_PLAINTEXT_LISTENER=yes
             - KAFKA_OPTS=-Dlog4j.rootLogger=DEBUG
         volumes:
