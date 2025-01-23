@@ -1,3 +1,4 @@
+import models.RentMessage;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.CreateTopicsOptions;
@@ -5,7 +6,6 @@ import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.KafkaFuture;
-import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.serialization.UUIDSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import models.Rent;
@@ -39,16 +39,17 @@ public class CustomKafkaProducer {
 
     public void sendRent(Rent rent) throws InterruptedException {
         createTopic();
+        RentMessage rentMessage = new RentMessage(rent, "Vehicle Rental");
         Jsonb jsonb = JsonbBuilder.create();
         Callback callback= this::onCompletion;
-        String jsonClient = jsonb.toJson(rent);
+        String jsonClient = jsonb.toJson(rentMessage);
         System.out.println(jsonClient);
         ProducerRecord<UUID, String> record = new ProducerRecord<>(RENT_TOPIC, rent.getRentId(), jsonClient);
-        kafkaProducer.send(record,callback);
+        kafkaProducer.send(record, callback);
     }
 
-    private void onCompletion (RecordMetadata data, Exception exception) {
-        if (exception == null) {
+    private void onCompletion(RecordMetadata data, Exception exception) {
+        if(exception == null) {
             System.out.println(data.offset());
         } else {
             System.out.println(exception);
@@ -56,8 +57,7 @@ public class CustomKafkaProducer {
     }
 
     public void createTopic() throws InterruptedException { Properties properties = new Properties();
-        properties.put
-                (AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka1:9192, kafka1:9292, kafka1:9392");
+        properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka1:9192, kafka1:9292, kafka1:9392");
         int partitionsNumber = 5;
         short replicationFactor = 3;
         try (Admin admin = Admin.create(properties)) {
@@ -66,7 +66,7 @@ public class CustomKafkaProducer {
                     .timeoutMs(1000)
                     .validateOnly(false)
                     .retryOnQuotaViolation(true);
-            CreateTopicsResult result = admin.createTopics (List.of (newTopic), options);
+            CreateTopicsResult result = admin.createTopics (List.of(newTopic), options);
             KafkaFuture<Void> futureResult = result.values().get(RENT_TOPIC); futureResult.get();
         } catch (ExecutionException e) {
             System.out.println("Topic already exists"+e.getCause());
