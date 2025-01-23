@@ -13,6 +13,7 @@ import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.serialization.UUIDSerializer;
 import models.Rent;
+import models.RentMessage;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
@@ -24,8 +25,10 @@ import java.util.concurrent.ExecutionException;
 public class CustomKafkaProducer {
     private static KafkaProducer<UUID, String> kafkaProducer;
     private final String RENT_TOPIC = "rents";
+    private final String rentalCompanyName;
 
-    public CustomKafkaProducer() throws ExecutionException, InterruptedException {
+    public CustomKafkaProducer(String rentalCompanyName) throws ExecutionException, InterruptedException {
+        this.rentalCompanyName = rentalCompanyName;
         initProducer();
     }
 
@@ -44,11 +47,11 @@ public class CustomKafkaProducer {
         return kafkaProducer;
     }
 
-    public void sendRentAsync(Rent rent) throws InterruptedException {
+    public void sendRent(Rent rent) throws InterruptedException {
         createTopic();
         Jsonb jsonb = JsonbBuilder.create();
         Callback callback = this::onCompletion;
-        String jsonClient = jsonb.toJson(rent);
+        String jsonClient = jsonb.toJson(new RentMessage(rent, rentalCompanyName));
         System.out.println(jsonClient);
         ProducerRecord<UUID, String> record = new ProducerRecord<>(RENT_TOPIC, rent.getRentId(), jsonClient);
         kafkaProducer.send(record, callback);
