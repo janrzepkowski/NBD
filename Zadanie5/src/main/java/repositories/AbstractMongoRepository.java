@@ -39,7 +39,7 @@ public abstract class AbstractMongoRepository implements AutoCloseable {
     private MongoClient mongoClient;
     private MongoDatabase database;
 
-    private void initDbConnection() {
+    protected void initDbConnection() {
         MongoClientSettings settings = MongoClientSettings.builder()
                 .credential(credential)
                 .applyConnectionString(connectionString)

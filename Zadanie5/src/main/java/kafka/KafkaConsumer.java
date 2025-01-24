@@ -1,3 +1,5 @@
+package kafka;
+
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
@@ -7,21 +9,21 @@ import repositories.MessageRepository;
 
 import java.text.MessageFormat;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class CustomKafkaConsumer {
-    List<KafkaConsumer<UUID, String>> kafkaConsumers = new ArrayList<>();
+public class KafkaConsumer {
+    private List<org.apache.kafka.clients.consumer.KafkaConsumer<UUID, String>> kafkaConsumers = new ArrayList<>();
     private final String RENT_TOPIC = "rents";
-    private int numberOfConsumers;
+    int numConsumers;
     private MessageRepository messageRepository;
 
-    public CustomKafkaConsumer(int numConsumers) throws ExecutionException, InterruptedException {
-        this.numberOfConsumers = numConsumers;
-        this.messageRepository = new MessageRepository();
-        initConsumers();
+    public KafkaConsumer(int numConsumers) throws ExecutionException, InterruptedException {
+        this.numConsumers = numConsumers;
+        messageRepository = new MessageRepository();
     }
 
     public void initConsumers() throws ExecutionException, InterruptedException {
@@ -31,10 +33,9 @@ public class CustomKafkaConsumer {
         consumerConfig.put(ConsumerConfig.GROUP_ID_CONFIG, "group-rents");
         consumerConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka1:9192,kafka2:9292,kafka3:9392");
         consumerConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-
         if (kafkaConsumers.isEmpty()) {
-            for (int i = 0; i < numberOfConsumers; i++) {
-                KafkaConsumer<UUID, String> kafkaConsumer = new KafkaConsumer<>(consumerConfig);
+            for (int i = 0; i < numConsumers; i++) {
+                org.apache.kafka.clients.consumer.KafkaConsumer<UUID, String> kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(consumerConfig);
                 kafkaConsumer.subscribe(Collections.singleton(RENT_TOPIC));
                 kafkaConsumers.add(kafkaConsumer);
                 System.out.println("Creating consumer " + (i + 1));
@@ -42,14 +43,15 @@ public class CustomKafkaConsumer {
         }
     }
 
-    public void consume(KafkaConsumer<UUID, String> consumer) {
+    public void consume(org.apache.kafka.clients.consumer.KafkaConsumer<UUID, String> consumer) {
         boolean saved = false;
+
         try {
-            consumer.poll(Duration.ofMillis(1000));
+            consumer.poll(0);
             Set<TopicPartition> consumerAssignment = consumer.assignment();
             consumer.seekToBeginning(consumerAssignment);
-            Duration timeout = Duration.ofMillis(100);
-            MessageFormat formatter = new MessageFormat("Consumer {5}, Topic {0}, Partition {1}, Offset {2, number, integer}, Key {3}, Value {4}");
+            Duration timeout = Duration.of(100, ChronoUnit.MILLIS);
+            MessageFormat formatter = new MessageFormat("Konsument {5}, Temat {0}, partycja {1}, offset {2, number, integer}, klucz {3}, wartość {4}");
 
             while (true) {
                 ConsumerRecords<UUID, String> records = consumer.poll(timeout);
@@ -65,7 +67,7 @@ public class CustomKafkaConsumer {
                     });
 
                     if (!saved) {
-                        messageRepository.saveMessageToRepository(record.value());
+                        messageRepository.saveMessage(record.value());
                     }
                     saved = true;
                     System.out.println(result);
@@ -78,19 +80,9 @@ public class CustomKafkaConsumer {
     }
 
     public void consumeTopicByAllConsumers() throws InterruptedException {
-        ExecutorService executorService = Executors.newFixedThreadPool(numberOfConsumers);
-        for (KafkaConsumer<UUID, String> consumer : kafkaConsumers) {
+        ExecutorService executorService = Executors.newFixedThreadPool(numConsumers);
+        for (org.apache.kafka.clients.consumer.KafkaConsumer<UUID, String> consumer : kafkaConsumers) {
             executorService.execute(() -> consume(consumer));
         }
-        Thread.sleep(10000);
-        for (KafkaConsumer<UUID, String> consumer : kafkaConsumers) {
-            consumer.wakeup();
-        }
-        executorService.shutdown();
-    }
-
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        CustomKafkaConsumer consumer = new CustomKafkaConsumer(2);
-        consumer.consumeTopicByAllConsumers();
     }
 }
