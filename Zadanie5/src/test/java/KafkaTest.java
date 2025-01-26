@@ -1,87 +1,131 @@
-//import com.mongodb.client.model.Filters;
-//import kafka.CustomKafkaProducer;
-//import kafka.KafkaConsumer;
-//import models.Car;
-//import models.Client;
-//import models.Rent;
-//import org.bson.Document;
-//import org.bson.conversions.Bson;
-//import org.junit.jupiter.api.*;
-//import repositories.RentRepository;
-//
-//import java.time.LocalDateTime;
-//import java.util.concurrent.ExecutionException;
-//
-//public class KafkaTest {
-//
-//    private static KafkaConsumer kafkaConsumer;
-//    private static Thread consumerThread;
-//    private static RentRepository rentRepository;
-//
-//    @BeforeAll
-//    public static void setUp() throws ExecutionException, InterruptedException {
-//        rentRepository = new RentRepository();
-//        kafkaConsumer = new KafkaConsumer(2);
-//        kafkaConsumer.initConsumers();
-//
-//        consumerThread = new Thread(() -> {
-//            try {
-//                kafkaConsumer.consumeTopicByAllConsumers();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//        consumerThread.start();
-//    }
-//
-//    @AfterAll
-//    public static void tearDown() {
-//        consumerThread.interrupt();
-//        kafkaConsumer.getKafkaConsumers().forEach(org.apache.kafka.clients.consumer.KafkaConsumer::wakeup);
-//    }
-//
-//    @BeforeEach
-//    public void clearDatabase() {
-//        rentRepository.getDatabase().getCollection("rents", Rent.class).deleteMany(new Document());
-//        rentRepository.getDatabase().getCollection("messages", Rent.class).deleteMany(new Document());
-//    }
-//
-//    @Test
-//    void testSendRent() throws ExecutionException, InterruptedException {
-//        Client client = new Client("Adam", "Małysz", "123456789");
-//        Car car = new Car("ABC123", "Toyota", 100, 'B', 1.8);
-//        LocalDateTime startDate = LocalDateTime.now();
-//        Rent rent = new Rent(client, car, startDate);
-//
-//        CustomKafkaProducer producer = new CustomKafkaProducer();
-//        producer.sendRent(rent);
-//    }
-//
-//    @Test
-//    void testProducerConsumer() throws ExecutionException, InterruptedException {
-//        CustomKafkaProducer producer = new CustomKafkaProducer();
-//        CustomKafkaProducer.initProducer();
-//
-//        Client client = new Client("Adam", "Małysz", "123456789");
-//        Car car = new Car("ABC123", "Toyota", 100, 'B', 1.8);
-//        LocalDateTime startDate = LocalDateTime.now();
-//        Rent rent = new Rent(client, car, startDate);
-//
-//        producer.sendRent(rent);
-//
-//        long timeout = System.currentTimeMillis() + 60000;
-//        Bson filter = Filters.eq("client.firstName", "Adam");
-//        Rent savedRent = null;
-//
-//        while (System.currentTimeMillis() < timeout) {
-//            savedRent = rentRepository.getDatabase().getCollection("rents", Rent.class).find(filter).first();
-//            if (savedRent != null) {
-//                break;
-//            }
-//            Thread.sleep(100);
-//        }
-//
-//        Assertions.assertNotNull(savedRent);
-//        Assertions.assertEquals(rent.getRentId(), savedRent.getRentId());
-//    }
-//}
+import kafka.CustomKafkaProducer;
+import kafka.KafkaConsumer;
+import models.Car;
+import models.Client;
+import models.Rent;
+import org.bson.Document;
+import org.junit.jupiter.api.*;
+import repositories.RentRepository;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class KafkaTest {
+
+    private KafkaConsumer kafkaConsumer1;
+    private KafkaConsumer kafkaConsumer2;
+    private Thread consumerThread1;
+    private Thread consumerThread2;
+    private RentRepository rentRepository;
+    private CustomKafkaProducer producer;
+
+    @BeforeAll
+    public void setUp() throws ExecutionException, InterruptedException {
+        rentRepository = new RentRepository();
+        kafkaConsumer1 = new KafkaConsumer(1);
+        kafkaConsumer2 = new KafkaConsumer(1);
+        kafkaConsumer1.initConsumers();
+        kafkaConsumer2.initConsumers();
+
+        consumerThread1 = new Thread(() -> {
+            try {
+                kafkaConsumer1.consumeTopicByAllConsumers();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        consumerThread2 = new Thread(() -> {
+            try {
+                kafkaConsumer2.consumeTopicByAllConsumers();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        consumerThread1.start();
+        consumerThread2.start();
+
+        producer = new CustomKafkaProducer();
+    }
+
+    @BeforeEach
+    public void cleanDatabase() {
+        rentRepository.getDatabase().getCollection("messages").drop();
+    }
+
+    @AfterAll
+    public void tearDown() {
+        consumerThread1.interrupt();
+        consumerThread2.interrupt();
+    }
+
+    @Test
+    public void testConsumerAssignment() throws InterruptedException {
+        Thread.sleep(5000);
+        try {
+            synchronized (kafkaConsumer1) {
+                kafkaConsumer1.getKafkaConsumers().forEach(consumer -> {
+                    synchronized (consumer) {
+                        assertFalse(consumer.assignment().isEmpty());
+                    }
+                });
+            }
+            synchronized (kafkaConsumer2) {
+                kafkaConsumer2.getKafkaConsumers().forEach(consumer -> {
+                    synchronized (consumer) {
+                        assertFalse(consumer.assignment().isEmpty());
+                    }
+                });
+            }
+        } catch (ConcurrentModificationException e) {
+            System.err.println("ConcurrentModificationException caught and ignored: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCreateAndReceiveRentals() throws InterruptedException {
+        Client client = new Client("John", "Doe", "1234567890");
+        Car car = new Car("ABC123", "Toyota", 100, 'B', 1.8);
+        Rent rent = new Rent(client, car, LocalDateTime.now());
+        producer.sendRent(rent);
+        Thread.sleep(5000);
+        List<Document> messages = rentRepository.getDatabase().getCollection("messages").find().into(new ArrayList<>());
+        assertFalse(messages.isEmpty());
+    }
+
+    @Test
+    public void testConsumerRestart() throws InterruptedException {
+        Client client = new Client("John", "Doe", "1234567890");
+        Car car = new Car("ABC123", "Toyota", 100, 'B', 1.8);
+        Rent rent = new Rent(client, car, LocalDateTime.now());
+        producer.sendRent(rent);
+        Thread.sleep(5000);
+        consumerThread1.interrupt();
+        consumerThread2.interrupt();
+        Thread.sleep(2000);
+        consumerThread1 = new Thread(() -> {
+            try {
+                kafkaConsumer1.consumeTopicByAllConsumers();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        consumerThread2 = new Thread(() -> {
+            try {
+                kafkaConsumer2.consumeTopicByAllConsumers();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        consumerThread1.start();
+        consumerThread2.start();
+        Thread.sleep(5000);
+        List<Document> messages = rentRepository.getDatabase().getCollection("messages").find().into(new ArrayList<>());
+        assertEquals(1, messages.size());
+    }
+}

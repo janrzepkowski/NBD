@@ -43,9 +43,11 @@ public class KafkaConsumer {
         }
     }
 
-    public void consume(org.apache.kafka.clients.consumer.KafkaConsumer<UUID, String> consumer) {
-        boolean saved = false;
+    public List<org.apache.kafka.clients.consumer.KafkaConsumer<UUID, String>> getKafkaConsumers() {
+        return kafkaConsumers;
+    }
 
+    public void consume(org.apache.kafka.clients.consumer.KafkaConsumer<UUID, String> consumer) {
         try {
             consumer.poll(0);
             Set<TopicPartition> consumerAssignment = consumer.assignment();
@@ -66,13 +68,10 @@ public class KafkaConsumer {
                             consumer.groupMetadata().memberId()
                     });
 
-                    if (!saved) {
-                        messageRepository.saveMessage(record.value());
-                    }
-                    saved = true;
+                    messageRepository.saveMessage(record.value());
                     System.out.println(result);
-                    consumer.commitAsync();
                 }
+                consumer.commitSync();
             }
         } catch (WakeupException we) {
             System.out.println("Job Finished");
